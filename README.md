@@ -9,9 +9,27 @@ This project aims to explore how various demographic and socioeconomic factors, 
 ## Getting Started
 
 ## Preprocessing 
-
+In order to prepare data for further analysis, we will compose all numerical columns into a vector and then scale using Spark's StandardScaler. This will ensure their distributions are close to normal distribution and would allow for better analysis later. Additionally, we will encode all categorical variables represented currently as a strings using Spark's SparkLabelEncoder giving every string label appropriate numerical value that can be used easily later.
 
 ## Authors
 
 
 
+
+
+root
+ |-- Age: float (nullable = true)
+ |-- WorkClass: string (nullable = true)
+ |-- Fnlwgt: float (nullable = true)
+ |-- Education: string (nullable = true)
+ |-- EducationNum: float (nullable = true)
+ |-- MaritalStatus: string (nullable = true)
+ |-- Occupation: string (nullable = true)
+ |-- Relationship: string (nullable = true)
+ |-- Race: string (nullable = true)
+ |-- Sex: string (nullable = true)
+ |-- CapitalGain: float (nullable = true)
+ |-- CapitalLoss: float (nullable = true)
+ |-- HoursPerWeek: float (nullable = true)
+ |-- NativeCountry: string (nullable = true)
+ |-- Income: string (nullable = true)
