@@ -8,10 +8,53 @@ This project aims to explore how various demographic and socioeconomic factors, 
 
 ## Getting Started
 
+In order to gain understanding of the data set, we performed various data exploration tasks including visualizations of data distributions and relationships, determining data types, and exploring the size and quality of the data. We found that we have a total of six numerical type variables and nine categorical variables. Below we have a description of the data and the observations that were made. 
+
+### Describe the Distributions 
+
+The data were collected from the 1994 census database.  The data were collected using the following conditions: age is between 16 and 100, the number of hours worked in a week is more than 0, and the final weight is more than 1.
+#### Age
+The majority of the participants in the dataset are under 50 years old.  The distribution appears to be trimodal with a prominent peak in ages from 16-25, followed by another peak in ages from 35-45.  The third peak is in ages from 75-85.  This distribution seems to generally match the distribution of age in the general population. In the general population, 8.7% of people are 19-25 years old, 12.3% of people are 26-34 years old, 25.7% of people are 35-54 years old, 12.9% of people are 55-64 years old, and 17.4% of people are over 65.  
+#### Education
+The majority of people earned a high school education.  The lowest education level achieved was a 1st-4th grade education.  There are more people that earned an associates degree than bachelor's degree.  
+#### Capital Gains
+The distribution of capital gains is heavily right skewed.  The majority of people had $0 income from capital gains.  If one had income from capital gains it was most likely under $5,000.  There are a few people that had income from capital gains in excess of $5,000 with a maximum value of approximately $22,000.
+#### Capital Loss
+Similar to capital gains, most people did not have any capital loss either.  This distribution is bimodal with a peak at 0, indicating most people did not lose any money by the sale of assets.  There is another peak in the data around $2,000 dollars indicating if one did lose money from the sale of assets, it was typically around $2,000.
+#### Hours worked per week
+The distribution of the number of hours worked is mostly symmetric with the peak at 30 - 39 hours.  In the U.S. women work an average of 36.6 hours per week and men work an average of 40.5 hours per week.  This is likely due to the increase of women that work part-time compared to men.  
+#### Work Class
+The majority of people are employed by private companies.  After private companies, it is a fairly even distribution of employers between the remaining groups.
+#### Marital Status
+There are several categories that refer to being married, such as married to a civilian, married to a spouse in the armed forces, or married to a spouse that lives a long distance away.  When these categories are combined the majority of people are married in this dataset.  
+#### Race and Gender
+71% of the population in the U.S. identifies as white, 12.2% identify as black, and 5.6% identify as Asian.  This demographic breakdown in this data is similar, as seen  in the bar chart on race.  Females comprise 51.1% of the population in the U.S.  The distribution of gender in this data also shows more females than males.  
+#### Income
+While income is typically a quantitative variable, in this data income has been categorized into 2 classes, less than or equal to $50,000 or more than $50,000.  Given that the median income in the U.S. in 2022 is $37,585 it is not surprising that the majority of participants earn less than or equal to $50,000 in our dataset as well.  
+
+
 ## Preprocessing 
-In order to prepare data for further analysis, we will compose all numerical columns into a vector and then scale using Spark's StandardScaler. This will ensure their distributions are close to normal distribution and would allow for better analysis later. Additionally, we will encode all categorical variables represented currently as a strings using Spark's SparkLabelEncoder giving every string label appropriate numerical value that can be used easily later.
+During the data exploration phase we found that the data collection is already relatively clean. We found no null or missing values for any of the variables, so no imputation or handling of nulls will be needed during the preprocessing. During the data exploration we did observe some skewing of distributions, but little evidence of outliers. The issue of skewed distributions can be handled during the preprocessing stage with normalization of the skewed variables. 
+
+We have varying types of data, including a mix of numerical and categorical variables. In order to properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables. Scaling will ensure that our varying numerical values, like age and capital gains, can be properly compared on an even field. Encoding of the categorical variables will allow us to perform various classification tasks. We have both ordinal categorical variables like education (High School < Associates < Bachelors < Masters), as well as nominal categorical variables like occupation. Ordinal categorical variables can be encoded via mapping or Label Encoding, while the nominal categorical variables can be encoded with one-hot encoding. The varying techniques of encoding the ordinal and nominal categorical variables ensures that the model will not create unsubstantiated relationships between variables. 
+
 
 ## Authors
+
+Allison Conrey 
+alconrey@ucsd.edu
+
+Konrad Kaim 
+kkaim@ucsd.edu 
+
+Filina Nurcahya 
+Fnurcahyatjoa@ucsd.edu
+
+Caroline Hutchings
+Chutchings@ucsd.edu
+
+Camryn Curtis 
+cscurtis@ucsd.edu 
 
 
 
