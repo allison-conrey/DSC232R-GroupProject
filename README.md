@@ -65,7 +65,7 @@ The overall accuracy of the model was low, at 46%.  Some possible reasons for th
 
 ## Jupyter Notebook
 
-You can find the analysis in the [Jupyter Notebook](https://github.com/yourusername/yourrepository/blob/main/your_notebook.ipynb](https://github.com/allison-conrey/DSC232R-GroupProject/blob/main/Milestone3.ipynb).
+You can find the analysis in the [Jupyter Notebook](https://github.com/yourusername/yourrepository/blob/main/your_notebook.ipynb).
 
 ## Authors
 
