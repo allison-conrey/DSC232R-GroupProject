@@ -63,6 +63,9 @@ The first model selected was a logistic regression model.  Logistic regression m
 
 The overall accuracy of the model was low, at 46%.  Some possible reasons for the low accuracy of the model are a non-linear relationship between the features and outcome exists; the data are highly imbalanced, with the majority of samples having a highschool education; overfitting, too complex of a model for the data available; missing data; and outliers.  Some possible steps to improve this model would be to reduce the number of features, remove data with outliers, and balance the data by removing some of the samples with a high school education.  However, since it is possible a non-linear relationship exists, we hope to have better success with a random forest model.
 
+## Jupyter Notebook
+
+You can find the analysis in the [Jupyter Notebook]([https://github.com/yourusername/yourrepository/blob/main/your_notebook.ipynb](https://github.com/allison-conrey/DSC232R-GroupProject/blob/main/Milestone3.ipynb)).
 
 ## Authors
 
