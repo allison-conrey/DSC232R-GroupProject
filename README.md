@@ -115,7 +115,7 @@ We have varying types of data, including a mix of numerical and categorical vari
 
 Starting with the numerical variables,  scaling will ensure that our varying numerical values, like age and capital gains, can be properly compared on an even field. To complete this process all of the numerical variables are first transformed into a vector, and the numerical variables are scaled using the StandardScaler() function. The StandardScaler() function works by transforming the varying numerical values so that they have a mean of zero and a standard deviation of 1, representing a normal distribution. This ensures that all numerical values are on the same scale. During this stage of the preprocessing, we also performed a 60-20-20 train-test-validation split on the data. 
 
-'''
+``` 
 vector_assembler = VectorAssembler().setInputCols(NumericalDataType).setOutputCol('NumericalDataType')
 spark_dataframe_transformed = vector_assembler.transform(spark_dataframe_with_grouped_education)
 list_of_columns = list(spark_dataframe_with_grouped_education.columns)
@@ -133,13 +133,11 @@ scaled_train = flatten(scaler_model.transform(train_split))
 scaled_test = flatten(scaler_model.transform(test_split))
 scaled_validation = flatten(scaler_model.transform(validation_split)
 
-'''
+``` 
 
 The next step of the preprocessing phase was to handle the categorical variables. As identified in the data exploration phase, the target variable of the education group had a total of 16 possible values. For best use in our machine learning model and ease of analysis, we decided to condense some of these values into one. This included mapping any education level between pre-school and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED", "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".
 
-'''
-
-
+``` 
 # Define a function to map education levels to groups
 def group_education_level(education_label):
    education_index_mapping = {
@@ -172,15 +170,11 @@ spark_dataframe_with_grouped_education = spark_dataframe.withColumn('EducationGr
 
 
 sampled_df_with_grouped_education = spark_dataframe_with_grouped_education.sample(withReplacement = False, fraction = 0.001, seed = 505)
+```
 
-
-'''
 The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation purposes once the model was employed. 
 
-
-
-
-'''
+``` 
 list_of_columns = list(spark_dataframe_with_grouped_education.columns)
 string_indexer = StringIndexer(inputCols=CatergoricalDataType, outputCols=[el + "Indexed" for el in CatergoricalDataType])
 indexer_model = string_indexer.fit(train_split)
@@ -200,9 +194,9 @@ educationgroup_mapping = education_indexer_model.labelsArray[8]  # 'Education' i
 print("Index mapping for 'EducationGroup' column:")
 for index, label in enumerate(educationgroup_mapping):
    print(f"Index: {index} --> Label: {label}")
+``` 
 
 
-'''
 
 #### Model 1
 The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided not to use any hyperparameter tuning. 
