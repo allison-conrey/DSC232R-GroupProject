@@ -101,6 +101,133 @@ Education is essential to the economic growth and development of a nation.7  The
 This study aims to explore economic and social factors influencing educational attainment, aiming to inform policies to elevate SES, reduce poverty, and enhance health and well-being.  By analyzing a simulated dataset representing diverse populations worldwide and their various characteristics, we aim to identify patterns and classifications using a variety of analytical methods. Our goal is to develop a predictive model that accurately explains the factors contributing to low educational attainment. The findings of this research could inform policy changes and raise awareness about the significant obstacles preventing access to education. Moreover, this study highlights the potential impact on regional economies and societies as education levels rise among the population.
 ### Figures
 ### Methods
+#### Data Exploration
+In the data exploration phase, we first examined the data for missingness and noise.  We found no null values that would require pre-processing attention.  
+
+We then examined the variables present in the data to understand their types, format, and distribution. We found that we had a total of six numerical and nine categorical variables. The six numerical variables include Age, Capital Gains, Capital Loss, Hours Worked per Week, Fnlwgt, and Education number. The nine categorical variables included Work Class, Education, Occupation, Marital Status, Relationship, Race, Sex, Income, and Native Country. We found that with a mix of numerical and categorical variables, scaling and encoding would need to take place in the pre-processing phase. 
+
+Next, we created visualizations to identify the distributions of the data and any skewing(Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during pre-processing. In addition, we sought to identify any relationships between numerical variables(Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. 
+
+The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.4). There are 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit which will be addressed in the preprocessing phase. 
+
+#### Pre-Processing 
+We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
+
+Starting with the numerical variables,  scaling will ensure that our varying numerical values, like age and capital gains, can be properly compared on an even field. To complete this process all of the numerical variables are first transformed into a vector, and the numerical variables are scaled using the StandardScaler() function. The StandardScaler() function works by transforming the varying numerical values so that they have a mean of zero and a standard deviation of 1, representing a normal distribution. This ensures that all numerical values are on the same scale. During this stage of the preprocessing, we also performed a 60-20-20 train-test-validation split on the data. 
+
+'''
+vector_assembler = VectorAssembler().setInputCols(NumericalDataType).setOutputCol('NumericalDataType')
+spark_dataframe_transformed = vector_assembler.transform(spark_dataframe_with_grouped_education)
+list_of_columns = list(spark_dataframe_with_grouped_education.columns)
+train_split, test_split, validation_split = spark_dataframe_transformed.randomSplit([0.6, 0.2, 0.2], seed=13)
+CatergoricalDataType = [el for el in list_of_columns if el not in NumericalDataType]
+
+
+def flatten(df):
+   return df.withColumn("NumericalDataTypeTransformed", vector_to_array(F.col('NumericalDataTypeTransformed'))) \
+       .select(CatergoricalDataType + [F.col("NumericalDataTypeTransformed")[i].alias(c + "Scaled") for i, c in enumerate(NumericalDataType)])
+
+
+scaler_model = StandardScaler().setInputCol('NumericalDataType').setOutputCol('NumericalDataTypeTransformed').fit(train_split)
+scaled_train = flatten(scaler_model.transform(train_split))
+scaled_test = flatten(scaler_model.transform(test_split))
+scaled_validation = flatten(scaler_model.transform(validation_split)
+
+'''
+
+The next step of the preprocessing phase was to handle the categorical variables. As identified in the data exploration phase, the target variable of the education group had a total of 16 possible values. For best use in our machine learning model and ease of analysis, we decided to condense some of these values into one. This included mapping any education level between pre-school and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED", "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".
+
+'''
+
+
+# Define a function to map education levels to groups
+def group_education_level(education_label):
+   education_index_mapping = {
+       'HS-grad': 'High School or GED',
+       'Some-college': 'Some College',
+       'Bachelors': "Bachelor's Degree",
+       'Masters': "Master's Degree",
+       'Assoc-voc': "Associate's Degree",
+       '11th': 'Less than High School',
+       'Assoc-acdm': "Associate's Degree",
+       '10th': 'Less than High School',
+       '7th-8th': 'Less than High School',
+       '9th': 'Less than High School',
+       'Prof-school': "Master's Degree",
+       '12th': 'Less than High School',
+       'Doctorate': 'Doctorate',
+       '5th-6th': 'Less than High School',
+       'Preschool': 'Less than High School',
+       '1st-4th': 'Less than High School'
+   }
+   return education_index_mapping.get(education_label, 'Other')
+
+
+# Define a UDF to apply the function to each row of the DataFrame
+group_education_udf = udf(group_education_level, StringType())
+
+
+# Apply the UDF to create a new column for grouped education levels
+spark_dataframe_with_grouped_education = spark_dataframe.withColumn('EducationGroup', group_education_udf(spark_dataframe['Education']))
+
+
+sampled_df_with_grouped_education = spark_dataframe_with_grouped_education.sample(withReplacement = False, fraction = 0.001, seed = 505)
+
+
+'''
+The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation purposes once the model was employed. 
+
+
+
+
+'''
+list_of_columns = list(spark_dataframe_with_grouped_education.columns)
+string_indexer = StringIndexer(inputCols=CatergoricalDataType, outputCols=[el + "Indexed" for el in CatergoricalDataType])
+indexer_model = string_indexer.fit(train_split)
+indexed_train = indexer_model.transform(scaled_train)
+indexed_test = indexer_model.transform(scaled_test)
+indexed_validation = indexer_model.transform(scaled_validation)
+
+
+education_indexer_model = indexer_model
+
+
+# Retrieve the index mapping labels for the 'EducationGroup' column
+educationgroup_mapping = education_indexer_model.labelsArray[8]  # 'Education' is the ninth indexed column
+
+
+# Print the index mapping for the 'EducationGroup' column
+print("Index mapping for 'EducationGroup' column:")
+for index, label in enumerate(educationgroup_mapping):
+   print(f"Index: {index} --> Label: {label}")
+
+
+'''
+
+#### Model 1
+The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided not to use any hyperparameter tuning. 
+``` 
+from pyspark.ml.classification import LogisticRegression
+from pyspark.ml import Pipeline
+
+# Define the features (X) and target variable (y) columns
+feature_columns = ['WorkClassIndexed', 'MaritalStatusIndexed', 'OccupationIndexed', 'RelationshipIndexed', 'RaceIndexed', 'SexIndexed', 'NativeCountryIndexed', 'IncomeIndexed', 'NumericalDataTypeTransformed']
+label_column = 'EducationGroupIndexed'
+
+# Define VectorAssembler to assemble features into a single vector column
+vector_assembler = VectorAssembler(inputCols=feature_columns, outputCol='features')
+
+# Create Logistic Regression model
+lr = LogisticRegression(featuresCol='features', labelCol=label_column)
+
+# Create a pipeline with VectorAssembler and Logistic Regression model
+pipeline = Pipeline(stages=[vector_assembler, lr])
+
+# Fit the pipeline to the training data
+model = pipeline.fit(train)
+```
+
+
 ### Results
 ### Discussion 
 ### Conclusion
