@@ -10,9 +10,17 @@
 - [Submissions](#submissions)
   - [Milestone 2](#milestone-2)
   - [Milestone 3](#milestone-3)
+  - [Milestone 4](#milestone-4)
 - [Code](#code)
 - [Written Report](#written-report)
-- [Final Model, Results Summary, and Github Repository](#final-model-results-summary-and-gibhub-repository)
+  - [Introduction](#introduction)
+  - [Figures](#figures)
+  - [Methods Section](#methods-section)
+  - [Results Section](#results-section)
+  - [Discussion Section](#disucssion-section)
+  - [Conclusion](#conclusion)
+  - [Statement of Collaboration](#statement-of-collaboration)
+  - [Final Model And Results Summary](#final-model-and-results-summary)
 
 
 ## Introduction
@@ -54,9 +62,8 @@ We have varying types of data, including a mix of numerical and categorical vari
 
 ### Milestone 3
 
-
-##### Execution
-For this project, we decided to condense the education categories from 16 possible response variables to 7 response variables. This included mapping any education level between pre-school and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED", "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".  
+##### Preprocessing Execution
+We condensed the education categories from 16 possible response variables to 7 response variables. This included mapping any education level between pre-school and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED", "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".  
 
 Numerical variables for the dataset were ultimately transformed in two ways. First, all numerical variables outlined above (Age, Fnlwgt, EducationNum, CaptialGain, CapitalLoss, and HoursPerWeek) were compiled into a vector and added to the "NumericalDataType" column. Second, numerical variables were scaled using StandardScaler to ensure that all numerical variables were appropriately represented by a normal distribution, which resolves the issue of skewing addressed above. 
 
@@ -64,11 +71,7 @@ Categorical variables for the dataset were ultimately transformed by the deploym
 
 After the preprocessing of the numerical and categorical variables, a final data frame containing the transformed variables was created. In addition, a 60/20/20 train, test, and validation split was performed on the data for use in the model-building stage. The randomSplit function was employed with seed=13. Ultimately, the features of the model-building stage were the categorical variables outlined above in addition to the numerical variable vector in 'NumericalDataTypeTransformed'. The target variable was determined to be 'EducationGroupIndexed', which was also indexed using the StringIndex function to assign numerical index labels to the varying education levels. 
 
-
-
-
-
-## Creation and Conclusion of First Model
+#### Creation and Conclusion of First Model
 The first model selected was a logistic regression model.  Logistic regression models are classification models used to predict outcomes based on the features of the data. Logistic regression uses the sigmoid function to map a linear combination of the features to a probability score for each class and the class with the highest probability is the predicted class for the sample.  Logistic regression assumes there is a linear relationship between the features and label and independence between the features.  While the correlation analysis on the data did not show a high correlation between the features, some of the features such as age and capital loss, and capital loss and capital gain did show moderate correlation.  
 
 The overall accuracy of the model was low, at 46%.  Some possible reasons for the low accuracy of the model are a non-linear relationship between the features and outcome exists; the data are highly imbalanced, with the majority of samples having a high school education; overfitting, too complex of a model for the data available; missing data; and outliers.  Some possible steps to improve this model would be to reduce the number of features, remove data with outliers, and balance the data by removing some of the samples with a high school education.  However, since it is possible a non-linear relationship exists, we hope to have better success with a random forest model.
@@ -80,6 +83,7 @@ Random forests are an ensemble method that fits multiple decision tree classifie
 
 The advantages of random forests are there are more options for hyperparameter tuning which could help us to improve the fit of our model, the model is robust to missing or noisy data, and the model is highly scalable. Since random forests do not assume a linear relationship in the data they can model more complex data.  
 
+### Milestone 4
 
 ## Code 
 
