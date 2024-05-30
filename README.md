@@ -22,11 +22,9 @@ This project aims to explore how various demographic and socioeconomic factors, 
 
 ## Submissions
 
-### Milestone 2
+## Milestone 2
 
-#### Data Exploration
-
-##### Getting Started
+### Data Exploration
 
 In order to gain understanding of the data set, we performed various data exploration tasks including visualizations of data distributions and relationships, determining data types, and exploring the size and quality of the data. We found that we have a total of six numerical type variables and nine categorical variables. Below we have a description of the data and the observations that were made. 
 
