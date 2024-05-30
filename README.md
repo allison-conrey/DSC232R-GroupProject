@@ -13,7 +13,7 @@
   - [Milestone 4](#milestone-4)
 - [Code](#code)
 - [Written Report](#written-report)
-  - [Introduction](#introduction)
+  - [Introduction of Project](#introduction-of-project)
   - [Figures](#figures)
   - [Methods Section](#methods-section)
   - [Results Section](#results-section)
@@ -93,7 +93,7 @@ The advantages of random forests are there are more options for hyperparameter t
 
 ## Written Report 
 
-### Introduction 
+### Introduction of Project
 Socioeconomic status (SES) encompasses an individual's economic and social standing, typically measured by factors like education, income, and occupation.4 Higher SES correlates with better health outcomes, attributed to factors like access to healthcare and healthier lifestyles.3 While SES doesn't directly cause chronic diseases, it reflects environmental and lifestyle influences that contribute to their likelihood.4  Access to quality education throughout life, including college education, is a key component in increasing SES.2  Increased SES plays a pivotal role in improving health by enhancing access to resources and opportunities.  Steady employment decreases the likelihood of poverty and the associated health risks of living in poverty.1  People with college educations are half as likely to be unemployed as their peers who only have a high school degree.5  Those with a bachelor’s degree earn on average 86% more than those with a high school education.5  In fact, college graduates on average make 1.2 million more over their lifetime.5  
 
 Education is essential to the economic growth and development of a nation.7  The economic market is changing everyday and education helps to prepare students for the current and changing job market.7  “Educational attainment is a defining factor in people’s future success, and helps reduce inequality.”8  However, it has been shown that children from low SES families do not have the same access to high-quality schools, technology, extracurricular activities, and tutors.8  Furthermore, children from low SES tend to have poor cognitive development, language, memory, and socio-emotional processing.  These factors contribute to higher dropout rates that perpetuate the low SES intergenerational trap.6,8  
