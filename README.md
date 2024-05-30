@@ -17,7 +17,7 @@
   - [Figures](#figures)
   - [Methods](#methods)
   - [Results](#results)
-  - [Discussion](#disucssion)
+  - [Discussion](#discussion)
   - [Conclusion](#conclusion)
   - [Statement of Collaboration](#statement-of-collaboration)
   - [Final Model And Results Summary](#final-model-and-results-summary)
