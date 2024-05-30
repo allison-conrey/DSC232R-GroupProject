@@ -8,13 +8,13 @@
 - [Final Model, Results Summary, and Github Repository](#final-model-results-summary-and-gibhub-repository)
 
 
-### Introduction
+## Introduction
 
-## Description
+### Description
 
 This project aims to explore how various demographic and socioeconomic factors, such as geography, income, and age, shape individuals' educational attainment levels. By analyzing a simulated dataset representing diverse populations worldwide and their various characteristics, we aim to identify patterns and classifications using a variety of analytical methods. Our goal is to develop a predictive model that accurately explains the factors contributing to low educational attainment. The findings of this research could inform policy changes and raise awareness about the significant obstacles preventing access to education. Moreover, this study highlights the potential impact on regional economies and societies as education levels rise among the population.
 
-## Getting Started
+### Getting Started
 
 In order to gain understanding of the data set, we performed various data exploration tasks including visualizations of data distributions and relationships, determining data types, and exploring the size and quality of the data. We found that we have a total of six numerical type variables and nine categorical variables. Below we have a description of the data and the observations that were made. 
 
