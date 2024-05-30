@@ -1,6 +1,8 @@
-<div align="center">  <h1> DSC232R Spring 2024 Group Project<br>
-    Exploring Demographic and Socioeconomic Influences on Educational Attainment
-  </h1>
+<div align="center">  
+    <h1> 
+        DSC232R Spring 2024 Group Project<br>
+        Exploring Demographic and Socioeconomic Influences on Educational Attainment
+    </h1>
 </div>
 
 ## Table of Contents
