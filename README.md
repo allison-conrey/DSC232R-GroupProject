@@ -1,5 +1,4 @@
-# DSC232R Spring 2024 Group Project
-# Exploring Demographic and Socioeconomic Influences on Educational Attainment
+# DSC232R Spring 2024 Group Project /n Exploring Demographic and Socioeconomic Influences on Educational Attainment
 
 ## Table of Contents
 - [Introduction](#introduction)
