@@ -4,8 +4,8 @@
 - [Introduction](#introduction)
 - [Submissions](#submissions)
 - [Code](#code)
-- [Written Report](#writtenreport)
-- [Final Model, Results Summary, and Github Repository](#finalmodel)
+- [Written Report](#written-report)
+- [Final Model, Results Summary, and Github Repository](#final-model-results-summary-and-gibhub-repository)
 
 
 # Exploring Demographic and Socioeconomic Influences on Educational Attainment
