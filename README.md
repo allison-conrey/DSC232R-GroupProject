@@ -15,9 +15,9 @@
 - [Written Report](#written-report)
   - [Introduction of Project](#introduction-of-project)
   - [Figures](#figures)
-  - [Methods Section](#methods-section)
-  - [Results Section](#results-section)
-  - [Discussion Section](#disucssion-section)
+  - [Methods](#methods)
+  - [Results](#results)
+  - [Discussion](#disucssion)
   - [Conclusion](#conclusion)
   - [Statement of Collaboration](#statement-of-collaboration)
   - [Final Model And Results Summary](#final-model-and-results-summary)
@@ -102,7 +102,7 @@ This study aims to explore economic and social factors influencing educational a
 ### Figures
 ### Methods
 ### Results
-### Discussion Section 
+### Discussion 
 ### Conclusion
 ### Statement of Collaboration 
 
