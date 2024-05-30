@@ -53,9 +53,9 @@ During the data exploration phase, we found that the data collection was already
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables. Scaling will ensure that our varying numerical values, like age and capital gains, can be properly compared on an even field. Encoding of the categorical variables will allow us to perform various classification tasks. We have both ordinal categorical variables like education (High School < Associates < Bachelors < Masters), as well as nominal categorical variables like occupation. Ordinal categorical variables can be encoded via mapping or Label Encoding, while the nominal categorical variables can be encoded with one-hot encoding. The varying techniques of encoding the ordinal and nominal categorical variables ensure that the model will not create unsubstantiated relationships between variables. 
 
 
+You can find the analysis in the [Jupyter Notebook](https://github.com/allison-conrey/DSC232R-GroupProject/blob/main/Milestone2.ipynb).
 
-
-
+### Milestone 3
 
 
 ##### Execution
