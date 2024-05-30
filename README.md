@@ -2,14 +2,10 @@
 
 ## Table of Contents
 - [Introduction](#introduction)
-- [Figures](#figures)
-- [Methods](#methods)
-- [Results](#results)
-- [Discussion](#discussion)
-- [Conclusion](#conclusion)
-- [Statement of Collaboration](#statmentofcollaboration)
+- [Submissions](#submissions)
+- [Code](#code)
+- [Written Report](#writtenreport)
 - [Final Model, Results Summary, and Github Repository](#finalmodel)
-
 
 
 # Exploring Demographic and Socioeconomic Influences on Educational Attainment
