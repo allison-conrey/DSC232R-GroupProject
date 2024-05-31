@@ -110,11 +110,11 @@ Next, we created visualizations to identify the distributions of the data and an
 
 ![](images/PlotHeatWCaption.png)
 
-![](images/CategoricalWCaption.png)
+<img src="images/CategoricalWCaption.png" width=60% height=60%>
 
 The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). There are 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit which will be addressed in the preprocessing phase. 
 
-![](images/EducationInitialWCaption.png)
+<img src="images/EducationInitialWCaption.png" width=40% height=40%>
 
 #### Pre-Processing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
@@ -178,7 +178,7 @@ spark_dataframe_with_grouped_education = spark_dataframe.withColumn('EducationGr
 sampled_df_with_grouped_education = spark_dataframe_with_grouped_education.sample(withReplacement = False, fraction = 0.001, seed = 505)
 ```
 
-![](images/EducationTransformedWCaption.png)
+<img src="images/EducationTransformedWCaption.png" width=50% height=50%>
 
 The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation purposes once the model was employed. 
 
