@@ -178,8 +178,6 @@ spark_dataframe_with_grouped_education = spark_dataframe.withColumn('EducationGr
 sampled_df_with_grouped_education = spark_dataframe_with_grouped_education.sample(withReplacement = False, fraction = 0.001, seed = 505)
 ```
 
-<img src="images/EducationTransformedWCaption.png" width=50% height=50%>
-
 The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation purposes once the model was employed. 
 
 ``` 
@@ -231,6 +229,16 @@ model = pipeline.fit(train)
 
 
 ### Results
+#### Data Exploration
+
+#### Pre-Processing
+
+<img src="images/EducationTransformedWCaption.png" width=50% height=50%>
+
+#### Model 1
+
+#### Model 2
+
 ### Discussion 
 ### Conclusion
 ### Statement of Collaboration 
