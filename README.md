@@ -108,7 +108,13 @@ We then examined the variables present in the data to understand their types, fo
 
 Next, we created visualizations to identify the distributions of the data and any skewing(Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during pre-processing. In addition, we sought to identify any relationships between numerical variables(Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. 
 
-The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.4). There are 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit which will be addressed in the preprocessing phase. 
+![](images/PlotHeatWCaption.png)
+
+![](images/CategoricalWCaption.png)
+
+The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). There are 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit which will be addressed in the preprocessing phase. 
+
+![](images/EducationInitialWCaption.png)
 
 #### Pre-Processing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
