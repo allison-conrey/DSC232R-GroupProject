@@ -102,19 +102,9 @@ This study aims to explore economic and social factors influencing educational a
 ### Figures
 ### Methods
 #### Data Exploration
-In the data exploration phase, we first examined the data for missingness and noise.  We found no null values that would require pre-processing attention.  
+In the data exploration phase, we first examined the data for missingness and noise using the isNull() function.  We then examined the variables present in the data to understand their types and formats using the describe() and show() functions. 
 
-We then examined the variables present in the data to understand their types, format, and distribution. We found that we had a total of six numerical and nine categorical variables. The six numerical variables include Age, Capital Gains, Capital Loss, Hours Worked per Week, Fnlwgt, and Education number. The nine categorical variables included Work Class, Education, Occupation, Marital Status, Relationship, Race, Sex, Income, and Native Country. We found that with a mix of numerical and categorical variables, scaling and encoding would need to take place in the pre-processing phase. 
-
-Next, we created visualizations to identify the distributions of the data and any skewing(Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during pre-processing. In addition, we sought to identify any relationships between numerical variables(Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. 
-
-![](images/PlotHeatWCaption.png)
-
-<img src="images/CategoricalWCaption.png" width=60% height=60%>
-
-The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). There are 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit which will be addressed in the preprocessing phase. 
-
-<img src="images/EducationInitialWCaption.png" width=40% height=40%>
+Next, we created visualizations to identify the distributions of the data and any skewing(Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during preprocessing. In addition, we sought to identify any relationships between numerical variables(Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). 
 
 #### Pre-Processing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
@@ -178,7 +168,7 @@ spark_dataframe_with_grouped_education = spark_dataframe.withColumn('EducationGr
 sampled_df_with_grouped_education = spark_dataframe_with_grouped_education.sample(withReplacement = False, fraction = 0.001, seed = 505)
 ```
 
-The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation purposes once the model was employed. 
+The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation once the model was employed. 
 
 ``` 
 list_of_columns = list(spark_dataframe_with_grouped_education.columns)
@@ -201,8 +191,6 @@ print("Index mapping for 'EducationGroup' column:")
 for index, label in enumerate(educationgroup_mapping):
    print(f"Index: {index} --> Label: {label}")
 ``` 
-
-
 
 #### Model 1
 The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided not to use any hyperparameter tuning. 
@@ -230,6 +218,21 @@ model = pipeline.fit(train)
 
 ### Results
 #### Data Exploration
+We found the data was relatively clean with no null values, requiring minimal cleaning to make it ready.  While some skewing of distributions was observed, outliers were minimal.
+
+We found that we had a total of six numerical and nine categorical variables. The six numerical variables include ‘Age’, ‘Capital Gains’, ‘Capital Loss’, ‘Hours Worked per Week’, ‘Fnlwgt’, and ‘Education number’. The nine categorical variables included ‘Work Class’, ‘Education’, ‘Occupation’, ‘Marital Status’, ‘Relationship’, ‘Race’, ‘Sex’, ‘Income’, and ‘Native Country’. We found that with a mix of numerical and categorical variables, scaling and encoding would need to occur in the preprocessing phase.
+
+After plotting the distribution and heatmap correlations of the numerical variables we found that there was little correlation between the numerical variables. A lack of correlation in the numerical variables suggests minimal amounts of multicollinearity, which is beneficial when employing models like logistic regression. We did find that only ‘Education Number’ and ‘Hours per week’ showed a relatively normal distribution. The other numerical variables showed mostly right-skewed distributions that can be corrected in the preprocessing phase. 
+
+![](images/PlotHeatWCaption.png)
+
+When plotting the categorical variables we found that the variables ‘Sex’ and ‘Income’ had a relatively even split between their two possible values. The vast majority of the data described the “United States” as being the ‘Native Country’, “Private” as the ‘Work Class’, and the ‘Race’ as being “White”. Education and Occupation proved to both represent multimodal distributions, white relationships and marital status had a relatively even spread of data across their respective categories. In summary, the categorical variables had a variety of distribution types, which will be important to consider during the analysis phase. 
+
+<img src="images/CategoricalWCaption.png" width=60% height=60%>
+
+When looking at the target variable ‘Education Group’ we found that there were 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit. Streamlining the target variable and condensing the possible values will be addressed in the preprocessing phase. 
+
+<img src="images/EducationInitialWCaption.png" width=40% height=40%>
 
 #### Pre-Processing
 
