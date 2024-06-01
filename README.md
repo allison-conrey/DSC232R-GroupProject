@@ -248,6 +248,24 @@ The target variable, ‘Education Group’, was mapped from sixteen values to se
 
 #### Model 1
 
+After using a logistic regression machine learning model with no hyperparameter tuning, we received the following results:
+
+Training Accuracy: 0.4562334217506631
+Validation Accuracy: 0.4607058349695414
+Test Accuracy: 0.44939090819055166
+
+Our initial model yielded a test and training accuracy of approximately 0.45, indicating that the model failed to learn effectively. This may be due to the lack of parameter tuning or data incompatibility. 
+
+Below is the result of the confusion matrix for the predictions made for the logistic regression model. As we can see, that model had the most success predicting the  “Less than High School” education group. However, the model predicted “Less than High School” for the majority of the data, leading to a significant amount of false negative errors. The same pattern occurred for the “High School or GED” classification, where there were a significant amount of false negative errors made by the model. 
+
+<img src="images/LogRegCMWCaption.png" width=50% height=50%>
+
+Upon examining the results, an intriguing observation emerges. The model demonstrated superior prediction accuracy for certain categories compared to others. This discrepancy might stem from varying data availability and the distinctiveness of patterns within each group.
+
+<img src="images/Model1AccuracyWCaption.png" width=50% height=50%>
+
+As we can see in Figure 6, the model could predict the `Less than High School` and `High School and GED` groups with the most accuracy. This corresponds with Figure 2 showing that this might be an issue with differing amounts of data for each group. The biggest concern here is that the model could only predict three of the categories with any amount of accuracy, leaving ‘Some College’, ‘Associate’s Degree’, ‘Master’s Degree’, and ‘Doctorate’ completely unrepresented by Model 1. 
+
 #### Model 2
 
 ### Discussion 
