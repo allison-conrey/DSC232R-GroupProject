@@ -236,6 +236,14 @@ When looking at the target variable ‘Education Group’ we found that there we
 
 #### Pre-Processing
 
+Our preprocessing steps included : 
+Encoding Categorical variables
+Scaling Numerical Variables 
+
+After preprocessing, our numerical data was transformed into numerical vectors to make it more compatible with machine learning models. During this process, the distributions of the numerical variables were also standardized, with a mean of 0 and a standard deviation of 1. This process helps with the data that we noted was skewed to the right and created normal distributions for all of the numerical variables. The categorical variables were encoded with numeric values so that they could be properly employed in our desired machine learning models, including the target variable ‘Education Group’. 
+
+The target variable, ‘Education Group’, was mapped from sixteen values to seven possible values. The results of that mapping are shown below in the updated histogram. 
+
 <img src="images/EducationTransformedWCaption.png" width=50% height=50%>
 
 #### Model 1
