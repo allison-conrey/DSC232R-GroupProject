@@ -836,16 +836,104 @@ As we can see in Figure 6, the model could predict the `Less than High School` a
 
 #### Model 2
 
-### Discussion 
+### Discussion
+
+The findings of this study shed light on the relationship between economic and social factors influencing educational attainment. The low prediction accuracy of our logistic regression and random forest models highlight the challenges in accurately predicting educational attainment based on economic and social factors, particularly for those with an associate degree, master’s degree, or doctorate degree.  There are over twice as many subjects with a less than high school education compared to the other levels of education.  This underscores the importance of addressing data imbalances in future modeling efforts to ensure more accurate predictions. 
+
+**Data Exploration**
+
+Although the data was clean and easy to work with, we found it too noisy and outdated for our purposes. This data was based on the 1994 census, making it unsuitable for predicting factors leading to higher education today. To improve our model, we need current data that better represents present-day situations. Additionally, incorporating new relevant features could be beneficial, as many challenges people face today were not present in 1994.
+
+Another concern we noticed is that some categories are more heavily represented than others. For example, most of the data includes people from the United States, which could skew the data and lead to overrepresentation. A model built with an overrepresented label could produce misrepresentative results, potentially leading to incorrect decisions.
+To address this, we could filter some records or perform stratified sampling in the next iteration to better balance the classes. Additionally, we could focus the study on a single region to reduce confounding variables. A study this broad makes it difficult to obtain conclusive results and solutions, as each region has its own unique traits and challenges.
+PreProcessing
+
+This process is vital because it allows us to train our model on a portion of the data, use the validation set to analyze the model's performance, and then test our final model on the test set. The validation set is crucial for hyperparameter tuning and potentially using cross-validation.
+During preprocessing, we converted our features into vectors, which later made feature engineering difficult. Although this approach simplifies model training, it restricts our ability to manipulate the data as needed. Next time, we should consider retaining the data in a dataframe format to facilitate easier feature engineering. Converting our data into vectors proved unsuitable for our specific needs, costing us more time to get the data where we needed it to be.
+
+**Model One**
+
+We could see from the results that the model was able to detect some categories better than others and that the model was not able to generalize well to either the testing or training data. Possible reasons for a poor performance with certain classes include class imbalance, with significantly more observations of individuals with high school diplomas, feature representation, the features we used may not be informative enough to distinguish between the educational groups, and model complexity, the model may be too simple to capture the differences.  That leads us to believe that the model is not compatible with the data and we should try another model that is more robust to noise in the data. 
+
+While the logistic regression model did not perform with high accuracy, it was able to accurately predict some educational outcomes such as those with ‘less than a high school’ education (89% accuracy), those with a ‘high school’ education (63% accuracy), and to a lesser extent those with a ‘bachelor’s degree’ education (22% accuracy).  Due to the data imbalance most records resulted in a prediction of ‘less than high school’ or ‘high school’ education, even if this was not the correct label which led to the increased accuracy for ‘less than a high school’ and ‘high school’ education labels.  
+
+For those with a master’s degree 315 were predicted to have a bachelor’s degree compared to 4 with the correct prediction of master’s degree.  It was even worse for those with a doctorate degree where 0 were predicted to have a doctorate degree and 69 were predicted to have a bachelor’s degree.  This is a result of some of the other features, like capital loss, increasing the likelihood of higher educational attainment than high school.  Even though bachelor’s degree was not the most common degree obtained, it was the most common prediction for those that received a degree beyond high school.   When looking at the confusion matrix it is important to note that the overwhelming majority of predictions were the 3 most accurate labels, ‘less than high school’, ‘high school’, or bachelor’s degree which resulted in an increased accuracy for these labels.  
+
+Not surprising based on the heatmap, capital loss, which had the largest correlation coefficient (r = -0.14) with education level, was the logistic regression coefficient that had the biggest impact on the prediction of education level.  The change in log odds for one unit increase in capital loss is 0.2, which after exponentiating the log odds can be interpreted as for every one dollar increase in capital loss, the odds of predicting a higher education level is 1.22 times more likely.  A potential cause of this relationship could be those with higher education levels have a higher income and are therefore more likely to have money to invest and lose compared to those with a lower education level.  As a result those with higher education levels are more likely to experience a capital loss than those with a lower education level due to increased money to invest.  
+
+Following capital loss, income level (above or below $50,000) was the next largest coefficient (0.156) in the logistic regression model indicating there is an impact on the prediction of education level.  The likelihood of predicting a higher education level is 1.17 times more likely when the income is over $50,000 compared to less than $50,000.  It has been shown that education and income are positively correlated, the results of this study support this conclusion.
+
+Another interesting finding is that increases in age also increase the likelihood of a higher education level attainment.  Even though our data was limited to those that are at least 16 years old and almost finished with high school, age is still a factor that can be used to help predict level of education.  According to the model, for each additional year older the likelihood of predicting a higher education level is 1.08 times more likely.
+
+**Model Two**
+
+After running the second model, we can see that the results seem to follow similar patterns to our first model, however, it was able to perform much better on both the training and testing set. This was a much better model for our type of data but we believe that this data could benefit from hyperparameter tuning and other data manipulation techniques.
+
+It is important to note that while the accuracy of the logistic regression model was not high, using all the available features resulted in the highest level of accuracy for the logistic regression model.  In contrast, the accuracy of the random forest model in predicting education levels was higher and each tree in the ensemble selects a subset of the features to use.  Other possible reasons for the increase in accuracy of the random forest model is a non linear relationship exists between label and features, or there is correlation between features which logistic regression handles poorly.  Of specific relevance to this data, the random forest model is less sensitive to imbalanced classes.
+
 ### Conclusion
+
+In conclusion, we were able to build a relatively good model for predicting educational attainment levels using a random forest model. This model outperformed the logistic regression model, highlighting the importance of selecting the right algorithm for the data at hand. The random forest model's ability to handle non-linear relationships and correlated features, along with its robustness to imbalanced classes, resulted in higher accuracy compared to the logistic regression model.
+
+Our study revealed several key insights:
+
+**Data Imbalance:** There were significantly more subjects with less than a high school education compared to other education levels, which impacted the prediction accuracy. Addressing data imbalances through techniques like stratified sampling or filtering records will be crucial in future modeling efforts.
+
+**Outdated Data:** The data used in this study was from the 1994 census, making it unsuitable for predicting current educational attainment trends. Obtaining current data that better reflects present-day situations and incorporating new relevant features will improve the model's relevance and accuracy.
+
+**Feature Importance:** Features like capital loss and income level had significant impacts on predictions, aligning with known correlations between education and income. This underscores the need for comprehensive data to capture these relationships accurately.
+
+The low prediction accuracy for individuals with associate, master’s, or doctorate degrees highlights the challenges in accurately predicting educational attainment based on economic and social factors. The overrepresentation of certain categories, such as individuals from the United States, also skewed the data, leading to potentially misleading results. Future iterations should consider filtering records or using stratified sampling to better balance the classes and focusing on a single region to reduce confounding variables.
+
+Despite these challenges, our models provided valuable insights:
+
+**Logistic Regression Model:** This model struggled with generalization, particularly due to class imbalance, inadequate feature representation, and model complexity. While it performed better for categories like 'less than high school' and 'high school' education, it failed to accurately predict higher education levels.
+
+**Random Forest Model:** This model showed improved performance on both training and testing sets, highlighting its suitability for our data. The random forest model's ability to handle non-linear relationships, imbalanced classes and correlated features resulted in higher accuracy.
+
+For further steps, we could run another census to see how demographics have changed since the 1994 census. This would allow us to build a more relevant model and track changes in educational attainment over time. Keeping up with the population’s educational attainment is crucial, and understanding these changes can help ensure that as many people as possible receive an education.
+
+Future work should focus on:
+
+Obtaining up-to-date data
+
+Balancing class representations
+
+Exploring hyperparameter tuning and other data manipulation techniques
+
+These steps will enhance model accuracy and reliability, ensuring that we can provide valuable insights into educational attainment and help inform policies to improve education for all.
+
 ### Statement of Collaboration
+Allison Conrey (alconrey@ucsd.edu)
+Team Lead - Identified data used and contributed to data exploration and data visualizations.  Developed the first model using logistic regression, and second model complexity. Contributed to final write up.
+
+Camryn Curtis (cscurtis@ucsd.edu)
+Writer / Developer - Contributed to data visualizations and the development of the README and final report. Authored various sections including preprocessing, model descriptions, methods and result sections, and report visualizations.
+
+Caroline Hutchings (Chutchings@ucsd.edu)
+Writer / Developer - Contributed to the README and various sections of the reports including the introduction, descriptive statistics, interpretation of analyses, explanation of models and model fit, and discussion.
+
+Konrad Kaim (kkaim@ucsd.edu)
+Developer - Contributed to the code base, data preprocessing, logistic regression expressiveness analysis, implemented random forest model, confusion matrix calculation.
+
+Filina Nurcahya-Tjoa (Fnurcahyatjoa@ucsd.edu)
+Writer / Developer - Contributed to the code base, abstract, and final report. Ran EDA and helped with data cleaning and modeling. 
+
 ### References
+
 https://health.gov/healthypeople/objectives-and-data/browse-objectives/economic-stability#:~:text=Employment%20programs%2C%20career%20counseling%2C%20and,improve%20health%20and%20well%2Dbeing (1)
+
 https://publichealth.tulane.edu/blog/social-determinant-of-health-education-is-crucial/#:~:text=Access%20to%20quality%20education%20early%20in%20life%2C,understanding%20how%20education%20impacts%20the%20health%20of (2)
+
 https://onlinelibrary.wiley.com/doi/10.1002/9781118410868.wbehibs395 (3)
+
 https://www.sciencedirect.com/science/article/pii/S1047279700002052?casa_token=lf7_CWxJxPMAAAAA:DwW10ICu-zB1zfve37epzgsc51EYvTQ1cw1vWhWlrT4bi-eW1B0pSDHhIVbp6U6Z3C453SyOdA (4)
+
 https://www.aplu.org/our-work/4-policy-and-advocacy/publicuvalues/employment-earnings/#:~:text=College%20graduates%20are%20half%20as,million%20more%20over%20their%20lifetime (5)
+
 https://www.apa.org/pi/ses/resources/publications/education (6)
+
 https://thesocialripples.medium.com/factors-influencing-national-systems-of-education-9cdb5ace208b (7)
+
 https://imagine5.com/articles/beyond-the-school-gates/?gad_source=1&gclid=Cj0KCQjw3tCyBhDBARIsAEY0XNk7azlLHd1ri03CDUFQUyh57ATuSKsIol5UuFb0QNqzq1ED75yWxVgaAuXDEALw_wcB (8)
 
