@@ -787,7 +787,8 @@ final_test_error = 1 - final_test_accuracy
 
 
 ### Results
-#### Data Exploration
+
+**Data Exploration**
 We found the data was relatively clean with no null values, requiring minimal cleaning to make it ready.  While some skewing of distributions was observed, outliers were minimal.
 
 We found that we had a total of six numerical and nine categorical variables. The six numerical variables include ‘Age’, ‘Capital Gains’, ‘Capital Loss’, ‘Hours Worked per Week’, ‘Fnlwgt’, and ‘Education number’. The nine categorical variables included ‘Work Class’, ‘Education’, ‘Occupation’, ‘Marital Status’, ‘Relationship’, ‘Race’, ‘Sex’, ‘Income’, and ‘Native Country’. We found that with a mix of numerical and categorical variables, scaling and encoding would need to occur in the preprocessing phase.
@@ -795,48 +796,131 @@ We found that we had a total of six numerical and nine categorical variables. Th
 After plotting the distribution and heatmap correlations of the numerical variables we found that there was little correlation between the numerical variables. A lack of correlation in the numerical variables suggests minimal amounts of multicollinearity, which is beneficial when employing models like logistic regression. We did find that only ‘Education Number’ and ‘Hours per week’ showed a relatively normal distribution. The other numerical variables showed mostly right-skewed distributions that can be corrected in the preprocessing phase. 
 
 <img src="images/Figure1.png" width=50% height=60%>
+Figure 1 A & B: Distributions and relationships of numerical variables. 
 
-When plotting the categorical variables we found that the variables ‘Sex’ and ‘Income’ had a relatively even split between their two possible values. The vast majority of the data described the “United States” as being the ‘Native Country’, “Private” as the ‘Work Class’, and the ‘Race’ as being “White”. Education and Occupation proved to both represent multimodal distributions, white relationships and marital status had a relatively even spread of data across their respective categories. In summary, the categorical variables had a variety of distribution types, which will be important to consider during the analysis phase. 
+A. This figure shows the distribution of the numerical variables in the data with the count of occurrences on the y-axis and the respective quantity on the x-axis. We observe that some skewed distributions will need to be handled during preprocessing.  
 
-<img src="images/Figure 2.png" width=60% height=60%>
 
-When looking at the target variable ‘Education Group’ we found that there were 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit. Streamlining the target variable and condensing the possible values will be addressed in the preprocessing phase. 
+B. This is a heatmap that gives an alternative method of identifying the relationship between the numerical variables. The color of each square represents the level of correlation between the variables, with the diagonal squares (all red) indicating a variable’s relationship with itself, which will always be the highest at 1.0. 
 
-<img src="images/Figure3.png" width=40% height=40%>
 
-#### Pre-Processing
+
+Figure 2: Distributions of categorical variables
+
+<img src="images/Figure 2.png" width=50% height=60%>
+The above figure shows the distribution of all categorical variables in the data set. Mapping the distribution of the categorical variables allows us to not only understand potential trends like frequency,  but also any skewing or abnormalities that may need to be addressed during the pre-processing phase. 
+
+Figure 3: Visualization of education classes
+<img src="images/Figure3.png" width=50% height=60%>
+This visualization shows the frequency of 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College.
+
+**Preprocessing**
 
 Our preprocessing steps included : 
-Encoding Categorical variables
-Scaling Numerical Variables 
-
-After preprocessing, our numerical data was transformed into numerical vectors to make it more compatible with machine learning models. During this process, the distributions of the numerical variables were also standardized, with a mean of 0 and a standard deviation of 1. This process helps with the data that we noted was skewed to the right and created normal distributions for all of the numerical variables. The categorical variables were encoded with numeric values so that they could be properly employed in our desired machine learning models, including the target variable ‘Education Group’. 
-
+- Numerical variables have been composed into a vector
+- Dataset split to train, test and validation set in proportions: 60/20/20
+- Numerical variables vector have been scaled to better represent normal distribution
+- Categorical variables have been converted into their numerical representation
+- Dataframes have been filtered to contain only transformed columnsumns
+- 
+After preprocessing, our numerical data was transformed into numerical vectors to make it more compatible with machine learning models. During this process, the distributions of the numerical variables were also standardized, with a mean of 0 and a standard deviation of 1. This helps with the  noted right-skewed data to create a normal distribution for all of the numerical variables. The categorical variables were encoded with numeric values so that they could be properly employed in our desired machine learning models, including the target variable ‘Education Group’. 
 The target variable, ‘Education Group’, was mapped from sixteen values to seven possible values. The results of that mapping are shown below in the updated histogram. 
 
-<img src="images/Figure4.png" width=50% height=50%>
+Figure 4: Visualization of education group (target variable) after preprocessing. 
+<img src="images/Figure4.png" width=50% height=60%>
+The figure above shows the frequency distribution of the target variable, Education Group, after mapping the variables from sixteen possibilities to seven. Education groups are on the x-axis, and the frequency of occurrences for that group is on the y-axis. 
 
-#### Model 1
+We found that after mapping the ‘Less than High School’ Education level had over twice the amount of entries than any of the other education groups. However, the ‘High School or GED’, ‘Some College’, ‘Associate’s Degree’, ‘Bachelor’s Degree’ and ‘Master’s Degree’ groups all had similar frequencies. The ‘Doctorate’ education group had the lowest amount of occurrences. 
 
-After using a logistic regression machine learning model with no hyperparameter tuning, we received the following results:
+**Model One **
 
-Training Accuracy: 0.4562334217506631
-Validation Accuracy: 0.4607058349695414
-Test Accuracy: 0.44939090819055166
+Our initial model was a logistic regression model that used the numerical and categorical variables as features and the education group as the label.
 
-Our initial model yielded a test and training accuracy of approximately 0.45, indicating that the model failed to learn effectively. This may be due to the lack of parameter tuning or data incompatibility. 
+We completed a parameter grid search to allow us to systematically explore a range of hyperparameters that would produce the best performance for our model.  These hyperparameters included:
+- regParm: helps prevent overfitting by adding a penalty to the loss function
+- elasticNetParm: balances between L1 (lasso) and L2 (ridge) regularization
+- maxIter: higher values take longer, but allow more time for convergence
+- tol: determines a threshold for convergence.  Lower values result in stricter convergence criteria
+- fitIntercept: determines if we need to calculate the intercept for the model.  This is important if there is a non-zero mean in the data
+  
+The results from this search included: 
+<div style="text-align: center;">
+Best regParam: 0.01
+Best elasticNetParam: 0.0
+Best maxIter: 100
+Best tol: 0.001
+Best fitIntercept: False
+</div>
 
-Below is the result of the confusion matrix for the predictions made for the logistic regression model. As we can see, that model had the most success predicting the  “Less than High School” education group. However, the model predicted “Less than High School” for the majority of the data, leading to a significant amount of false negative errors. The same pattern occurred for the “High School or GED” classification, where there were a significant amount of false negative errors made by the model. 
+After using a logistic regression machine learning model with a parameter grid search, we received the following results:
 
-<img src="images/Figure5" width=50% height=50%>
+Training Accuracy: 0.4562667867807751
+Validation Accuracy: 0.46342445753410866
+Test Accuracy: 0.4504308210359513
 
-Upon examining the results, an intriguing observation emerges. The model demonstrated superior prediction accuracy for certain categories compared to others. This discrepancy might stem from varying data availability and the distinctiveness of patterns within each group.
+Figure 5: Confusion matrix of Logistic Regression Model Predictions. 
+<img src="images/Figure5.png" width=50% height=60%>
+The confusion matrix shows a breakdown of the logistic regression model’s performance. The label predicted by our model is present on the x-axis, and the true label of those predictions is on the y-axis. The confusion matrix allows us the opportunity to observe what classifications our model may be getting correct and incorrect. 
 
-<img src="images/Figure 6" width=50% height=50%>
+The model had the most success predicting the  “Less than High School” education group. However, the model predicted “Less than High School” for the majority of the data, leading to a significant amount of false negative errors. The model was able to predict ‘High School or GED’ with some accuracy, but there were also a large number of classes that were incorrectly predicted as ‘High School or GED’. The confusion matrix shows that the logistic regression model had little success with the other 5 education group classes. 
 
-As we can see in Figure 6, the model could predict the `Less than High School` and `High School and GED` groups with the most accuracy. This corresponds with Figure 2 showing that this might be an issue with differing amounts of data for each group. The biggest concern here is that the model could only predict three of the categories with any amount of accuracy, leaving ‘Some College’, ‘Associate’s Degree’, ‘Master’s Degree’, and ‘Doctorate’ completely unrepresented by Model 1. 
+Figure 6: Histogram of the logistic regression model’s accuracy in predicting the various classes in the ‘Education Group’ target variable. 
+<img src="images/Figure 6.png" width=50% height=60%>
+In this figure, we can see the accuracy percentages of the logistic regression in predicting each category in the ‘Education Group’. The categories are present on the x-axis, while the accuracy represented as a percentage can be found on the y-axis. 
 
-#### Model 2
+As we can see in Figure 6, the model could predict the `Less than High School` and `High School and GED` groups with the most accuracy and the model only predicted three of the categories with any amount of accuracy, leaving ‘Some College’, ‘Associate’s Degree’, ‘Master’s Degree’, and ‘Doctorate’ completely unrepresented by Model 1. 
+
+
+Figure 7: Histogram of the sorted features by coefficient value. 
+
+<img src="images/Figure 7.png" width=50% height=60%>
+This figure displays the feature importance of the logistic regression model. Features with higher absolute coefficient values have a greater impact on the model’s performance. The categories are present on the x-axis, while the feature’s coefficient value can be found on the y-axis. 
+
+After graphing the absolute coefficient values for the various features in the dataset, we found that ‘CapitalLoss’ had the largest Coefficient Value at almost 0.20, followed by  ‘Income’ and ‘EducationNum’. ‘Fnlwg’ and ‘Age’ had similar coefficients at about 0.075. ‘Relationship’, ‘WorkClass’, ‘Occupation’, and ‘MaritalStatus’ all had low coefficients at about 0.025. ‘NativeCountry’ had the lowest coefficient value at about 0.010, indicating that it had little impact on the logistic regression model. 
+
+When looking at the model’s performance with varying numbers of the top features for the training, validation, and test data sets we can make several observations. First, the training, validation, and test accuracy all follow the same pattern of accuracy when compared to the number of features. The accuracy for the validation data performed the best, followed by the training data, and the accuracy for the test data performed the worst. However, for all of the data partitions we found that the model performed best when using all fourteen features. The model performed much better with three features than with only two features, taking a slight dip in accuracy between three and eight features. From nine to fourteen features, the accuracy of the model steadily increased. 
+
+<img src="images/Figure8.png" width=50% height=60%>
+Figure 8: Line plot on the model performance with increasing number of features. 
+This figure helps us understand how many features should be included in the model to achieve the best performance. The number of features are on the x-axis, while the accuracy represented as a percentage can be found on the y-axis. The blue line represents the varying amount of features used in the model for the training data, the green line represents the validation data, and the red data represents the test data. 
+
+When exploring the model’s predictive accuracy with differing regularization parameters (C ), the error on the training data and test data followed the same shape and trend(Fig.9). However, the predictive error on the training data was lower than the predictive error on the test data. We observed that the models increasingly improve from a regularization parameter value of 10-4  to about 10-3. After 10-3, the predictive error evens out and does not increase or decrease after this point. This indicates that the best regularization parameter value for our logistic regression model is about C=10-3. 
+
+<img src="images/Figure9.png" width=50% height=60%>
+Figure 9: Line plot on predictive error for logistic regression. 
+This graph helps identify the optimal range for the regularization parameter C, where the test error is minimized. The x-axis represents the regularization parameter C in the logistic regression model and the y-axis represents the predictive error of the model. The red line represents the predictive error of the model on the training data, and the blue line represents the predictive error on the model on the test data. 
+
+**Model Two **
+
+Upon completion of the first random forest classification model with no parameter tuning, we received the following results:
+
+Training Accuracy: 0.6024890312463507
+Validation Accuracy: 0.6027286915370287
+Test Accuracy: 0.6015153015747252
+
+Giving an initial test accuracy of 0.605. While this is not awful, we attempted to perform parameter tuning to improve this model. 
+
+Figure 10: Confusion matrix of Random Forest Model Predictions.
+<img src="images/Figure10.png" width=50% height=60%>
+Figure 10 shows the result of the confusion matrix for the predictions made for the initial  random forest model. As we can see, that model had the most success predicting the “Less than High School” education group. It follows a similar pattern to the one found with the logistic regression model, however, it was able to predict outside the “Less than High School” education group more. As with the other model, the model demonstrated superior prediction accuracy for certain categories compared to others. These categories that the model predicted with more accuracy  included ‘Less than High School’, ‘High School or GED’, and ‘Some College’. 
+
+The confusion matrix shows a breakdown of the initial Random Forest Classifier model’s performance. The label predicted by our model is present on the x-axis, and the true label of those predictions is on the y-axis. The confusion matrix allows us the opportunity to observe what classifications our model may be getting correct and incorrect and what type of errors are occurring. 
+
+
+We then performed parameter tuning on the Random Forest Model using the training, validation, and test data by testing the model with different numbers of trees. We then created a visualization (Fig. 11) and determined that based on the validation data, the best number of trees to use in the model was 60. We can see from the visualization that all three partitions of the data performed similarly, with a slow decline from twenty to forty trees, followed by a sharp decline in predictive error from forty to sixty. Sixty trees proved to be the point of lowest predictive error for all three sets of data, and the predictive data increased from sixty to eighty, with a slight decrease to one hundred. 
+
+
+<img src="images/Figure11.png" width=50% height=60%>
+Figure 11: Predictive Error vs. Number of Trees for Random Forest Model
+The line plot above illustrates the relationship between the model complexity (number of trees) and the predictive error for a random forest model. The x-axis represents the number of trees in the random forest, while the y-axis shows the predictive error.
+
+After using a random forest machine learning model with identifying the optimal number of trees, we received the following results:
+
+Final Training Accuracy: 0.6289141350950069
+Final Validation Accuracy: 0.6271459497558274
+Final Test Accuracy: 0.6258789739526592
+
+The final test accuracy of 0.625 shows an improvement over our previous model. 
 
 ### Discussion
 
