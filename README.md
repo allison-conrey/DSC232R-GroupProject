@@ -83,6 +83,7 @@ Random forests are an ensemble method that fits multiple decision tree classifie
 The advantages of random forests are there are more options for hyperparameter tuning which could help us to improve the fit of our model, the model is robust to missing or noisy data, and the model is highly scalable. Since random forests do not assume a linear relationship in the data they can model more complex data.  
 
 ### Milestone 4
+See [Written Report](#written-report)
 
 ## Code 
 
