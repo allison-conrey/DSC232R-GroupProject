@@ -20,6 +20,7 @@
   - [Conclusion](#conclusion)
   - [Statement of Collaboration](#statement-of-collaboration)
   - [Final Model And Results Summary](#final-model-and-results-summary)
+  - [References](#references)
 
 
 ## Abstract
@@ -837,42 +838,14 @@ As we can see in Figure 6, the model could predict the `Less than High School` a
 
 ### Discussion 
 ### Conclusion
-### Statement of Collaboration 
+### Statement of Collaboration
+### References
+https://health.gov/healthypeople/objectives-and-data/browse-objectives/economic-stability#:~:text=Employment%20programs%2C%20career%20counseling%2C%20and,improve%20health%20and%20well%2Dbeing (1)
+https://publichealth.tulane.edu/blog/social-determinant-of-health-education-is-crucial/#:~:text=Access%20to%20quality%20education%20early%20in%20life%2C,understanding%20how%20education%20impacts%20the%20health%20of (2)
+https://onlinelibrary.wiley.com/doi/10.1002/9781118410868.wbehibs395 (3)
+https://www.sciencedirect.com/science/article/pii/S1047279700002052?casa_token=lf7_CWxJxPMAAAAA:DwW10ICu-zB1zfve37epzgsc51EYvTQ1cw1vWhWlrT4bi-eW1B0pSDHhIVbp6U6Z3C453SyOdA (4)
+https://www.aplu.org/our-work/4-policy-and-advocacy/publicuvalues/employment-earnings/#:~:text=College%20graduates%20are%20half%20as,million%20more%20over%20their%20lifetime (5)
+https://www.apa.org/pi/ses/resources/publications/education (6)
+https://thesocialripples.medium.com/factors-influencing-national-systems-of-education-9cdb5ace208b (7)
+https://imagine5.com/articles/beyond-the-school-gates/?gad_source=1&gclid=Cj0KCQjw3tCyBhDBARIsAEY0XNk7azlLHd1ri03CDUFQUyh57ATuSKsIol5UuFb0QNqzq1ED75yWxVgaAuXDEALw_wcB (8)
 
-## Authors
-
-Allison Conrey 
-alconrey@ucsd.edu
-
-Konrad Kaim 
-kkaim@ucsd.edu 
-
-Filina Nurcahya 
-Fnurcahyatjoa@ucsd.edu
-
-Caroline Hutchings
-Chutchings@ucsd.edu
-
-Camryn Curtis 
-cscurtis@ucsd.edu 
-
-
-
-### Data Scheme
-
-root
- |-- Age: float (nullable = true)
- |-- WorkClass: string (nullable = true)
- |-- Fnlwgt: float (nullable = true)
- |-- Education: string (nullable = true)
- |-- EducationNum: float (nullable = true)
- |-- MaritalStatus: string (nullable = true)
- |-- Occupation: string (nullable = true)
- |-- Relationship: string (nullable = true)
- |-- Race: string (nullable = true)
- |-- Sex: string (nullable = true)
- |-- CapitalGain: float (nullable = true)
- |-- CapitalLoss: float (nullable = true)
- |-- HoursPerWeek: float (nullable = true)
- |-- NativeCountry: string (nullable = true)
- |-- Income: string (nullable = true)
