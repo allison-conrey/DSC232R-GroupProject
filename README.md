@@ -387,8 +387,8 @@ cvModel = crossval.fit(train)
 
 # Get the best model from cross-validation
 bestModel = cvModel.bestModel
-
 ```
+
 We then found the accuracy of the model for the training, validation, and test set
 
 ```
