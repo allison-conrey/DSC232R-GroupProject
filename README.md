@@ -106,6 +106,7 @@ This study aims to explore economic and social factors influencing educational a
 ### Methods
 Data Exploration
 In the data exploration phase, we first examined the data for missingness and noise using the isNull() function.  We then examined the variables present in the data to understand their types and formats using the describe() and show() functions. 
+
 ```
 # How many records in this dataframe? 
 num_records = spark_dataframe.count()
@@ -124,6 +125,7 @@ print(pandas_df.describe())
 ```
 
 Next, we created visualizations to identify the distributions of the data and any skewing (Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during preprocessing. In addition, we sought to identify any relationships between numerical variables (Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). 
+
 ```
 # Visualize the distribution of numerical columns in a 3 by 2 grid layout
 plt.figure(figsize=(12, 10))
@@ -245,6 +247,7 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
 ```
+
 Preprocessing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
 
@@ -265,7 +268,9 @@ scaled_test = flatten(scaler_model.transform(test_split))
 scaled_validation = flatten(scaler_model.transform(validation_split))
 
 ```
+
 The next step of the preprocessing phase was to handle the categorical variables. As identified in the data exploration phase, the target variable of the education group had a total of 16 possible values. For best use in our machine learning model and ease of analysis, we decided to condense some of these values into one. This included mapping any education level between preschool and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED'', "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".
+
 
 ``` 
 from pyspark.sql.functions import udf
@@ -321,6 +326,7 @@ existing_education_groups = [group for group in education_order if group in educ
 education_group_counts = education_group_counts.set_index('EducationGroup').loc[existing_education_groups].reset_index()
 
 ```
+
 The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation once the model was employed. The education groups and their corresponding index number were then printed for future reference. 
 
 ```
@@ -354,6 +360,7 @@ for index, label in enumerate(educationgroup_mapping):
     print(f"Index: {index} --> Label: {label}")
 
 ```
+
 Model One 
 The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided to use a parameter grid search in an attempt to optimize several logistic regression parameters. In addition, we employed the use of the CrossValidator() function to perform 5-fold cross-validation.
 
@@ -412,6 +419,7 @@ print("Validation Accuracy:", validation_accuracy)
 print("Test Accuracy:", test_accuracy)
 
 ```
+
 We then employed a confusion matrix for the different education groups using the predictions made by the model. 
 
 ```
@@ -446,6 +454,7 @@ plt.xticks(rotation=45, ha='right')  # Rotate the x-axis labels for better reada
 plt.show()
 
 ```
+
 Based on the results in the confusion matrix, we then created a histogram visualization that would show the accuracy of the predictions made by the model for each of the education groups. 
 
 ```
@@ -487,6 +496,7 @@ for i in range(len(mapped_labels)):
 
 plt.show()
 ```
+
 Next, we extracted the coefficient values from the best logistic regression model found above. We then aggregated the coefficients of each feature by taking the mean of the absolute value of the coefficients across all of the education groups (classes). We printed these results and used them to create a visualization of the aggregate coefficient values sorted from highest value to lowest values. 
 
 ```
@@ -532,6 +542,7 @@ plt.title('Sorted Features by Coefficient Value')
 plt.xticks(rotation=45, ha='right')  # Rotate the feature names for better readability
 plt.grid(True)
 ```
+
 In order to gain more insight into our current logistic regression model, and how varying the numbers of features may contribute to the performance of the model, we evaluated the models performance using varying amounts of the top features (where top features were determined by the coefficient processing and sorting above). We started by testing the model with the top single feature, followed by the top two features, then the top three features,  and so on until we had conducted model testing from a single feature to all fourteen features. This process was repeated three times in total, testing all variations of the model on the training, validation, and test data. We then plotted the performance of every variation of the model for the training, validation, and test data to better understand the behavior of the model and how to optimize it. 
 
 ```
@@ -583,7 +594,8 @@ plt.legend()
 plt.grid(True)
 plt.show()
 ```
-The last step for Model 1 was to create a visualization showing the predictive error of both the model on the training data and the model on the testing data using various values of C (the regularization parameter). First, the spark dataframe was converted to a NumPy array for use with the Scikit-Learn package for the train, validation, and test sets. The model testing was then performed with values of C from 10-4 to 101 . 
+
+The last step for Model 1 was to create a visualization showing the predictive error of both the model on the training data and the model on the testing data using various values of C (the regularization parameter). First, the spark dataframe was converted to a NumPy array for use with the Scikit-Learn package for the train, validation, and test sets. The model testing was then performed with values of C from 10-4 to 101. 
 
 ```
 # Convert Spark DataFrame to NumPy arrays for Scikit-Learn
@@ -655,7 +667,7 @@ plt.legend()
 plt.show()
 ```
 
-**Model Two **
+**Model Two**
 
 For the second model, we first used a standard Random Forest Classifier. We used the VectorAssembler() function to first assemble all the desired features into a single vector column for use in the random forest model. We then trained a random forest model with this vector, the labels, and a max bin parameter of 64, and found and printed the accuracy of this model for the training, validation, and test sets. 
 
@@ -691,6 +703,7 @@ print("Training Accuracy:", train_accuracy)
 print("Validation Accuracy:", validation_accuracy)
 print("Test Accuracy:", accuracy)
 ```
+
 After training the initial model, we created an evaluator using the MulticlassClassificationEvaluator() function to determine the most advantageous model complexity for the Random Tree Model. We tested the model in steps of 20 from 20-100 trees to determine the best complexity. We repeated this process for all three partitions of the data (train, validation, and test), and retained the predictive error for each data partition and each tree complexity value for visualization purposes. We then created a line visualization of the Model Complexity vs Predictive Error for all data partitions and all complexities tested. We finally identified the best complexity value that resulted in the lowest predictive error for the validation set. 
 
 ```
@@ -761,6 +774,7 @@ print(f"Best number of trees: {best_num_trees}")
 
 
 ```
+
 Once the best complexity was discovered, we trained a final Random Forest Classifier model that included the best complexity in its parameters. We then found and printed the training, validation, and test accuracy for the final model. 
 
 ```
@@ -796,7 +810,7 @@ We found that we had a total of six numerical and nine categorical variables. Th
 
 After plotting the distribution and heatmap correlations of the numerical variables we found that there was little correlation between the numerical variables. A lack of correlation in the numerical variables suggests minimal amounts of multicollinearity, which is beneficial when employing models like logistic regression. We did find that only ‘Education Number’ and ‘Hours per week’ showed a relatively normal distribution. The other numerical variables showed mostly right-skewed distributions that can be corrected in the preprocessing phase. 
 
-**Figure 1 A & B: Distributions and relationships of numerical variables. **
+**Figure 1 A & B: Distributions and relationships of numerical variables**
 
 <img src="images/Figure1.png" width=50% height=60%>
 
@@ -812,11 +826,14 @@ B. This is a heatmap that gives an alternative method of identifying the relatio
 The above figure shows the distribution of all categorical variables in the data set. Mapping the distribution of the categorical variables allows us to not only understand potential trends like frequency,  but also any skewing or abnormalities that may need to be addressed during the pre-processing phase. 
 
 
+
 **Figure 3: Visualization of education classes**
 
 <img src="images/Figure3.png" width=50% height=60%>
 
 This visualization shows the frequency of 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College.
+
+
 
 #### Preprocessing
 
@@ -851,19 +868,17 @@ We completed a parameter grid search to allow us to systematically explore a ran
   
 The results from this search included: 
 
-<div style="text-align: center;">
     Best regParam: 0.01
     Best elasticNetParam: 0.0
     Best maxIter: 100
     Best tol: 0.001
     Best fitIntercept: False
-</div>
 
 After using a logistic regression machine learning model with a parameter grid search, we received the following results:
-
-Training Accuracy: 0.4562667867807751
-Validation Accuracy: 0.46342445753410866
-Test Accuracy: 0.4504308210359513
+    
+    Training Accuracy: 0.4562667867807751
+    Validation Accuracy: 0.46342445753410866
+    Test Accuracy: 0.4504308210359513
 
 **Figure 5: Confusion matrix of Logistic Regression Model Predictions.**
 
