@@ -798,7 +798,7 @@ After plotting the distribution and heatmap correlations of the numerical variab
 
 When plotting the categorical variables we found that the variables ‘Sex’ and ‘Income’ had a relatively even split between their two possible values. The vast majority of the data described the “United States” as being the ‘Native Country’, “Private” as the ‘Work Class’, and the ‘Race’ as being “White”. Education and Occupation proved to both represent multimodal distributions, white relationships and marital status had a relatively even spread of data across their respective categories. In summary, the categorical variables had a variety of distribution types, which will be important to consider during the analysis phase. 
 
-<img src="images/Figure-2.png" width=40% height=60%>
+<img src="images/Figure 2.png" width=60% height=60%>
 
 When looking at the target variable ‘Education Group’ we found that there were 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit. Streamlining the target variable and condensing the possible values will be addressed in the preprocessing phase. 
 
@@ -814,7 +814,7 @@ After preprocessing, our numerical data was transformed into numerical vectors t
 
 The target variable, ‘Education Group’, was mapped from sixteen values to seven possible values. The results of that mapping are shown below in the updated histogram. 
 
-<img src="images/EducationTransformedWCaption.png" width=50% height=50%>
+<img src="images/Figure4.png" width=50% height=50%>
 
 #### Model 1
 
@@ -828,11 +828,11 @@ Our initial model yielded a test and training accuracy of approximately 0.45, in
 
 Below is the result of the confusion matrix for the predictions made for the logistic regression model. As we can see, that model had the most success predicting the  “Less than High School” education group. However, the model predicted “Less than High School” for the majority of the data, leading to a significant amount of false negative errors. The same pattern occurred for the “High School or GED” classification, where there were a significant amount of false negative errors made by the model. 
 
-<img src="images/LogRegCMWCaption.png" width=50% height=50%>
+<img src="images/Figure5" width=50% height=50%>
 
 Upon examining the results, an intriguing observation emerges. The model demonstrated superior prediction accuracy for certain categories compared to others. This discrepancy might stem from varying data availability and the distinctiveness of patterns within each group.
 
-<img src="images/Model1AccuracyWCaption.png" width=50% height=50%>
+<img src="images/Figure 6" width=50% height=50%>
 
 As we can see in Figure 6, the model could predict the `Less than High School` and `High School and GED` groups with the most accuracy. This corresponds with Figure 2 showing that this might be an issue with differing amounts of data for each group. The biggest concern here is that the model could only predict three of the categories with any amount of accuracy, leaving ‘Some College’, ‘Associate’s Degree’, ‘Master’s Degree’, and ‘Doctorate’ completely unrepresented by Model 1. 
 
