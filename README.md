@@ -355,6 +355,7 @@ for index, label in enumerate(educationgroup_mapping):
 ```
 Model One 
 The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided to use a parameter grid search in an attempt to optimize several logistic regression parameters. In addition, we employed the use of the CrossValidator() function to perform 5-fold cross-validation.
+
 ``` 
 # Define VectorAssembler to assemble features into a single vector column
 vector_assembler = VectorAssembler(inputCols=feature_columns, outputCol='features')
@@ -529,7 +530,7 @@ plt.ylabel('Coefficient Value')
 plt.title('Sorted Features by Coefficient Value')
 plt.xticks(rotation=45, ha='right')  # Rotate the feature names for better readability
 plt.grid(True)
- ```
+```
 In order to gain more insight into our current logistic regression model, and how varying the numbers of features may contribute to the performance of the model, we evaluated the models performance using varying amounts of the top features (where top features were determined by the coefficient processing and sorting above). We started by testing the model with the top single feature, followed by the top two features, then the top three features,  and so on until we had conducted model testing from a single feature to all fourteen features. This process was repeated three times in total, testing all variations of the model on the training, validation, and test data. We then plotted the performance of every variation of the model for the training, validation, and test data to better understand the behavior of the model and how to optimize it. 
 
 ```
