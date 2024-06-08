@@ -798,7 +798,7 @@ After plotting the distribution and heatmap correlations of the numerical variab
 
 When plotting the categorical variables we found that the variables ‘Sex’ and ‘Income’ had a relatively even split between their two possible values. The vast majority of the data described the “United States” as being the ‘Native Country’, “Private” as the ‘Work Class’, and the ‘Race’ as being “White”. Education and Occupation proved to both represent multimodal distributions, white relationships and marital status had a relatively even spread of data across their respective categories. In summary, the categorical variables had a variety of distribution types, which will be important to consider during the analysis phase. 
 
-<img src="images/Figure2.png" width=60% height=60%>
+<img src="images/Figure-2.png" width=40% height=60%>
 
 When looking at the target variable ‘Education Group’ we found that there were 16 possible education group values for the target variable ranging from 1st grade to Doctorate. The categories with the highest counts include 11th grade, High School Graduate, and Some College. For a classification task, 16 possible values may pose challenges to the model with minimal benefit. Streamlining the target variable and condensing the possible values will be addressed in the preprocessing phase. 
 
