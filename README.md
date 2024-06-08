@@ -653,7 +653,9 @@ plt.legend()
 
 # Show the plot
 plt.show()
-Model Two 
+```
+
+**Model Two **
 
 For the second model, we first used a standard Random Forest Classifier. We used the VectorAssembler() function to first assemble all the desired features into a single vector column for use in the random forest model. We then trained a random forest model with this vector, the labels, and a max bin parameter of 64, and found and printed the accuracy of this model for the training, validation, and test sets. 
 
