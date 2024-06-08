@@ -105,7 +105,7 @@ This study aims to explore economic and social factors influencing educational a
 ### Methods
 Data Exploration
 In the data exploration phase, we first examined the data for missingness and noise using the isNull() function.  We then examined the variables present in the data to understand their types and formats using the describe() and show() functions. 
-‘’’
+```
 # How many records in this dataframe? 
 num_records = spark_dataframe.count()
 print('Number of records:', num_records)
@@ -120,10 +120,10 @@ spark_dataframe.describe()
 # Display basic statistics of numerical columns
 print("Basic Statistics of Numerical Columns:")
 print(pandas_df.describe())
-‘’’
+```
 
 Next, we created visualizations to identify the distributions of the data and any skewing (Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during preprocessing. In addition, we sought to identify any relationships between numerical variables (Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). 
-‘’’
+```
 # Visualize the distribution of numerical columns in a 3 by 2 grid layout
 plt.figure(figsize=(12, 10))
 plt.suptitle("Distributions of Numerical Variables", fontsize=16)  # Title of the overall plot
@@ -243,7 +243,7 @@ plt.xticks(rotation=45, ha='right')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
-‘’’
+```
 Preprocessing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
 
