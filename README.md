@@ -806,7 +806,7 @@ B. This is a heatmap that gives an alternative method of identifying the relatio
 
 
 
-**Figure 2: Distributions of categorical variable**s
+**Figure 2: Distributions of categorical variables**
 
 <img src="images/Figure 2.png" width=50% height=60%>
 The above figure shows the distribution of all categorical variables in the data set. Mapping the distribution of the categorical variables allows us to not only understand potential trends like frequency,  but also any skewing or abnormalities that may need to be addressed during the pre-processing phase. 
@@ -830,7 +830,7 @@ Our preprocessing steps included :
 After preprocessing, our numerical data was transformed into numerical vectors to make it more compatible with machine learning models. During this process, the distributions of the numerical variables were also standardized, with a mean of 0 and a standard deviation of 1. This helps with the  noted right-skewed data to create a normal distribution for all of the numerical variables. The categorical variables were encoded with numeric values so that they could be properly employed in our desired machine learning models, including the target variable ‘Education Group’. 
 The target variable, ‘Education Group’, was mapped from sixteen values to seven possible values. The results of that mapping are shown below in the updated histogram. 
 
-**Figure 4: Visualization of education group (target variable) after preprocessing. **
+**Figure 4: Visualization of education group (target variable) after preprocessing.**
 
 <img src="images/Figure4.png" width=50% height=60%>
 
@@ -865,7 +865,7 @@ Training Accuracy: 0.4562667867807751
 Validation Accuracy: 0.46342445753410866
 Test Accuracy: 0.4504308210359513
 
-**Figure 5: Confusion matrix of Logistic Regression Model Predictions. **
+**Figure 5: Confusion matrix of Logistic Regression Model Predictions.**
 
 <img src="images/Figure5.png" width=50% height=60%>
 
@@ -873,7 +873,7 @@ The confusion matrix shows a breakdown of the logistic regression model’s perf
 
 The model had the most success predicting the  “Less than High School” education group. However, the model predicted “Less than High School” for the majority of the data, leading to a significant amount of false negative errors. The model was able to predict ‘High School or GED’ with some accuracy, but there were also a large number of classes that were incorrectly predicted as ‘High School or GED’. The confusion matrix shows that the logistic regression model had little success with the other 5 education group classes. 
 
-**Figure 6: Histogram of the logistic regression model’s accuracy in predicting the various classes in the ‘Education Group’ target variable. **
+**Figure 6: Histogram of the logistic regression model’s accuracy in predicting the various classes in the ‘Education Group’ target variable.**
 
 <img src="images/Figure 6.png" width=50% height=60%>
 
@@ -882,7 +882,7 @@ In this figure, we can see the accuracy percentages of the logistic regression i
 As we can see in Figure 6, the model could predict the `Less than High School` and `High School and GED` groups with the most accuracy and the model only predicted three of the categories with any amount of accuracy, leaving ‘Some College’, ‘Associate’s Degree’, ‘Master’s Degree’, and ‘Doctorate’ completely unrepresented by Model 1. 
 
 
-**Figure 7: Histogram of the sorted features by coefficient value. **
+**Figure 7: Histogram of the sorted features by coefficient value.**
 
 <img src="images/Figure 7.png" width=50% height=60%>
 
@@ -892,7 +892,7 @@ After graphing the absolute coefficient values for the various features in the d
 
 When looking at the model’s performance with varying numbers of the top features for the training, validation, and test data sets we can make several observations. First, the training, validation, and test accuracy all follow the same pattern of accuracy when compared to the number of features. The accuracy for the validation data performed the best, followed by the training data, and the accuracy for the test data performed the worst. However, for all of the data partitions we found that the model performed best when using all fourteen features. The model performed much better with three features than with only two features, taking a slight dip in accuracy between three and eight features. From nine to fourteen features, the accuracy of the model steadily increased. 
 
-**Figure 8: Line plot on the model performance with increasing number of features. **
+**Figure 8: Line plot on the model performance with increasing number of features.**
 
 <img src="images/Figure8.png" width=50% height=60%>
 
@@ -982,29 +982,27 @@ In conclusion, we were able to build a relatively good model for predicting educ
 
 Our study revealed several key insights:
 
-**Data Imbalance:** There were significantly more subjects with less than a high school education compared to other education levels, which impacted the prediction accuracy. Addressing data imbalances through techniques like stratified sampling or filtering records will be crucial in future modeling efforts.
+- **Data Imbalance:** There were significantly more subjects with less than a high school education compared to other education levels, which impacted the prediction accuracy. Addressing data imbalances through techniques like stratified sampling or filtering records will be crucial in future modeling efforts.
 
-**Outdated Data:** The data used in this study was from the 1994 census, making it unsuitable for predicting current educational attainment trends. Obtaining current data that better reflects present-day situations and incorporating new relevant features will improve the model's relevance and accuracy.
+- **Outdated Data:** The data used in this study was from the 1994 census, making it unsuitable for predicting current educational attainment trends. Obtaining current data that better reflects present-day situations and incorporating new relevant features will improve the model's relevance and accuracy.
 
-**Feature Importance:** Features like capital loss and income level had significant impacts on predictions, aligning with known correlations between education and income. This underscores the need for comprehensive data to capture these relationships accurately.
+- **Feature Importance:** Features like capital loss and income level had significant impacts on predictions, aligning with known correlations between education and income. This underscores the need for comprehensive data to capture these relationships accurately.
 
 The low prediction accuracy for individuals with associate, master’s, or doctorate degrees highlights the challenges in accurately predicting educational attainment based on economic and social factors. The overrepresentation of certain categories, such as individuals from the United States, also skewed the data, leading to potentially misleading results. Future iterations should consider filtering records or using stratified sampling to better balance the classes and focusing on a single region to reduce confounding variables.
 
 Despite these challenges, our models provided valuable insights:
 
-**Logistic Regression Model:** This model struggled with generalization, particularly due to class imbalance, inadequate feature representation, and model complexity. While it performed better for categories like 'less than high school' and 'high school' education, it failed to accurately predict higher education levels.
+- **Logistic Regression Model:** This model struggled with generalization, particularly due to class imbalance, inadequate feature representation, and model complexity. While it performed better for categories like 'less than high school' and 'high school' education, it failed to accurately predict higher education levels.
 
-**Random Forest Model:** This model showed improved performance on both training and testing sets, highlighting its suitability for our data. The random forest model's ability to handle non-linear relationships, imbalanced classes and correlated features resulted in higher accuracy.
+- **Random Forest Model:** This model showed improved performance on both training and testing sets, highlighting its suitability for our data. The random forest model's ability to handle non-linear relationships, imbalanced classes and correlated features resulted in higher accuracy.
 
 For further steps, we could run another census to see how demographics have changed since the 1994 census. This would allow us to build a more relevant model and track changes in educational attainment over time. Keeping up with the population’s educational attainment is crucial, and understanding these changes can help ensure that as many people as possible receive an education.
 
 Future work should focus on:
 
-Obtaining up-to-date data
-
-Balancing class representations
-
-Exploring hyperparameter tuning and other data manipulation techniques
+- Obtaining up-to-date data
+- Balancing class representations
+- Exploring hyperparameter tuning and other data manipulation techniques
 
 These steps will enhance model accuracy and reliability, ensuring that we can provide valuable insights into educational attainment and help inform policies to improve education for all.
 
