@@ -6,15 +6,14 @@
 </div>
 
 ## Table of Contents
-- [Introduction](#introduction)
+- [Abstract](#abstract)
 - [Submissions](#submissions)
   - [Milestone 2](#milestone-2)
   - [Milestone 3](#milestone-3)
   - [Milestone 4](#milestone-4)
 - [Code](#code)
 - [Written Report](#written-report)
-  - [Introduction of Project](#introduction-of-project)
-  - [Figures](#figures)
+  - [Introduction](#introduction)
   - [Methods](#methods)
   - [Results](#results)
   - [Discussion](#discussion)
@@ -93,104 +92,266 @@ The advantages of random forests are there are more options for hyperparameter t
 
 ## Written Report 
 
-### Introduction of Project
+### Introduction
 Socioeconomic status (SES) encompasses an individual's economic and social standing, typically measured by factors like education, income, and occupation.4 Higher SES correlates with better health outcomes, attributed to factors like access to healthcare and healthier lifestyles.3 While SES doesn't directly cause chronic diseases, it reflects environmental and lifestyle influences that contribute to their likelihood.4  Access to quality education throughout life, including college education, is a key component in increasing SES.2  Increased SES plays a pivotal role in improving health by enhancing access to resources and opportunities.  Steady employment decreases the likelihood of poverty and the associated health risks of living in poverty.1  People with college educations are half as likely to be unemployed as their peers who only have a high school degree.5  Those with a bachelor’s degree earn on average 86% more than those with a high school education.5  In fact, college graduates on average make 1.2 million more over their lifetime.5  
 
-Education is essential to the economic growth and development of a nation.7  The economic market is changing everyday and education helps to prepare students for the current and changing job market.7  “Educational attainment is a defining factor in people’s future success, and helps reduce inequality.”8  However, it has been shown that children from low SES families do not have the same access to high-quality schools, technology, extracurricular activities, and tutors.8  Furthermore, children from low SES tend to have poor cognitive development, language, memory, and socio-emotional processing.  These factors contribute to higher dropout rates that perpetuate the low SES intergenerational trap.6,8  
+Education is essential to the economic growth and development of a nation.7  The economic market is changing every day and education helps to prepare students for the current and changing job market.7  “Educational attainment is a defining factor in people’s future success, and helps reduce inequality.”8  However, it has been shown that children from low SES families do not have the same access to high-quality schools, technology, extracurricular activities, and tutors.8  Furthermore, children from low SES tend to have poor cognitive development, language, memory, and socio-emotional processing.  These factors contribute to higher dropout rates that perpetuate the low SES intergenerational trap.6,8  
 
 This study aims to explore economic and social factors influencing educational attainment, aiming to inform policies to elevate SES, reduce poverty, and enhance health and well-being.  By analyzing a simulated dataset representing diverse populations worldwide and their various characteristics, we aim to identify patterns and classifications using a variety of analytical methods. Our goal is to develop a predictive model that accurately explains the factors contributing to low educational attainment. The findings of this research could inform policy changes and raise awareness about the significant obstacles preventing access to education. Moreover, this study highlights the potential impact on regional economies and societies as education levels rise among the population.
-### Figures
+
 ### Methods
 #### Data Exploration
 In the data exploration phase, we first examined the data for missingness and noise using the isNull() function.  We then examined the variables present in the data to understand their types and formats using the describe() and show() functions. 
+```
+# How many records in this dataframe? 
+num_records = spark_dataframe.count()
+print('Number of records:', num_records)
 
-Next, we created visualizations to identify the distributions of the data and any skewing(Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during preprocessing. In addition, we sought to identify any relationships between numerical variables(Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). 
+# Missing Data / Imputations 
+null_counts = spark_dataframe.select(*(sum(col(c).isNull().cast("int")).alias(c) for c in spark_dataframe.columns))
+null_counts.show()
+
+# Describe the Data
+spark_dataframe.describe()
+
+# Display basic statistics of numerical columns
+print("Basic Statistics of Numerical Columns:")
+print(pandas_df.describe())
+```
+
+Next, we created visualizations to identify the distributions of the data and any skewing (Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during preprocessing. In addition, we sought to identify any relationships between numerical variables (Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). 
+```
+# Visualize the distribution of numerical columns in a 3 by 2 grid layout
+plt.figure(figsize=(12, 10))
+plt.suptitle("Distributions of Numerical Variables", fontsize=16)  # Title of the overall plot
+
+for i, column in enumerate(pandas_df[numerical_columns]):
+    plt.subplot(3, 2, i + 1)
+    sns.histplot(pandas_df[column], kde=True)
+    plt.title(f'Distribution of {column}')
+plt.tight_layout()
+plt.show()
+
+#Pairplot showing the scatter plots and relationships between Numerical Variables 
+sns.set(style="ticks")
+
+pp=sns.pairplot(pandas_df, corner='true' )
+pp.fig.suptitle("Scatter Plots of Numerical Variables")
+plt.show()
+
+# Compute the correlation matrix
+corr_matrix = pandas_df.corr()
+
+# Create the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5, annot_kws={"size": 12})
+plt.title('Correlation Heatmap')
+plt.show()
+
+# Create subplots with a 4x2 grid for the categorical columns
+fig, axes = plt.subplots(5, 2, figsize=(12, 16))
+fig.suptitle("Distributions of Categorical Variables", fontsize=16, y=1)
+
+# Plot bar plots for each categorical column
+for i, column in enumerate(categorical_columns):
+    counts = spark_dataframe.groupBy(column).count().orderBy(column).collect()
+    categories = [str(row[column]) for row in counts]
+    values = [row['count'] for row in counts]
+    
+    # Access the individual axes correctly
+    ax = axes[i // 2, i % 2]
+    ax.bar(categories, values, edgecolor='black')
+    ax.set_title(f'Distribution of {column}')
+    ax.set_xlabel(column)
+    ax.set_ylabel('Count')
+    ax.grid(axis='y')
+    
+    # Set ticks and then rotate x-axis labels by 45 degrees and increase font size
+    ax.set_xticks(range(len(categories)))
+    ax.set_xticklabels(categories, rotation=45, ha='right', fontsize=10)
+
+# Plot bar plot for NativeCountry separately
+counts2 = spark_dataframe.groupBy('NativeCountry').count().orderBy('NativeCountry').collect()
+categories2 = [str(row['NativeCountry']) for row in counts2]
+values2 = [row['count'] for row in counts2]
+
+# Add a long horizontal graph at the bottom for NativeCountry
+ax_bottom = plt.subplot2grid((5, 2), (4, 0), colspan=2)
+ax_bottom.bar(categories2, values2, edgecolor='black')
+ax_bottom.set_title('Distribution of Native Country')
+ax_bottom.set_xlabel('NativeCountry')
+ax_bottom.set_ylabel('Count')
+ax_bottom.grid(axis='y')
+ax_bottom.set_xticks(range(len(categories2)))
+ax_bottom.set_xticklabels(categories2, rotation=45, ha='right', fontsize=10)
+
+# Hide the empty subplots behind ax_bottom
+for ax in axes[-1]:
+    ax.set_visible(False)
+
+# Adjust padding between subplots
+plt.subplots_adjust(hspace=2)
+
+# Adjust layout and display the plot
+plt.tight_layout()
+plt.show()
+
+for i in ['Education']:
+    value_counts = spark_dataframe.groupBy(i).count().orderBy(i).collect()
+
+    values = [row[i] for row in value_counts]
+    frequencies = [row['count'] for row in value_counts]
+
+    plt.bar(values, frequencies)
+    plt.xlabel(i)
+    plt.ylabel('Count')
+    plt.title('Bar plot of {}'.format(i))
+    plt.xticks(rotation=45)
+    plt.show()
+
+# Count the frequency of each education group
+education_group_counts = spark_dataframe_with_grouped_education.groupBy('EducationGroup').count().toPandas()
+
+# Define the order of education groups from least education to most education
+education_order = [
+    'Less than High School',
+    'High School or GED',
+    'Some College',
+    "Associate's Degree",
+    "Bachelor's Degree",
+    "Master's Degree",
+    'Doctorate',
+    'Other'
+]
+
+# Filter only the existing education groups before reordering
+existing_education_groups = [group for group in education_order if group in education_group_counts['EducationGroup'].values]
+
+# Reorder the education_group_counts DataFrame based on the filtered order
+education_group_counts = education_group_counts.set_index('EducationGroup').loc[existing_education_groups].reset_index()
+
+# Plot the distribution of education groups
+plt.figure(figsize=(10, 6))
+plt.bar(education_group_counts['EducationGroup'], education_group_counts['count'], color='skyblue')
+plt.title('Distribution of Grouped Education Levels')
+plt.xlabel('Education Group')
+plt.ylabel('Frequency')
+plt.xticks(rotation=45, ha='right')
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.tight_layout()
+plt.show()
+```
 
 #### Pre-Processing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
 
 Starting with the numerical variables,  scaling will ensure that our varying numerical values, like age and capital gains, can be properly compared on an even field. To complete this process all of the numerical variables are first transformed into a vector, and the numerical variables are scaled using the StandardScaler() function. The StandardScaler() function works by transforming the varying numerical values so that they have a mean of zero and a standard deviation of 1, representing a normal distribution. This ensures that all numerical values are on the same scale. During this stage of the preprocessing, we also performed a 60-20-20 train-test-validation split on the data. 
 
-``` 
+```` 
 vector_assembler = VectorAssembler().setInputCols(NumericalDataType).setOutputCol('NumericalDataType')
 spark_dataframe_transformed = vector_assembler.transform(spark_dataframe_with_grouped_education)
-list_of_columns = list(spark_dataframe_with_grouped_education.columns)
 train_split, test_split, validation_split = spark_dataframe_transformed.randomSplit([0.6, 0.2, 0.2], seed=13)
-CatergoricalDataType = [el for el in list_of_columns if el not in NumericalDataType]
-
 
 def flatten(df):
-   return df.withColumn("NumericalDataTypeTransformed", vector_to_array(F.col('NumericalDataTypeTransformed'))) \
-       .select(CatergoricalDataType + [F.col("NumericalDataTypeTransformed")[i].alias(c + "Scaled") for i, c in enumerate(NumericalDataType)])
-
+    return df.withColumn("NumericalDataTypeTransformed", vector_to_array(F.col('NumericalDataTypeTransformed'))) \
+        .select(CatergoricalDataType + [F.col("NumericalDataTypeTransformed")[i].alias(c + "Scaled") for i, c in enumerate(NumericalDataType)])
 
 scaler_model = StandardScaler().setInputCol('NumericalDataType').setOutputCol('NumericalDataTypeTransformed').fit(train_split)
 scaled_train = flatten(scaler_model.transform(train_split))
 scaled_test = flatten(scaler_model.transform(test_split))
-scaled_validation = flatten(scaler_model.transform(validation_split)
+scaled_validation = flatten(scaler_model.transform(validation_split))
+
+```
+The next step of the preprocessing phase was to handle the categorical variables. As identified in the data exploration phase, the target variable of the education group had a total of 16 possible values. For best use in our machine learning model and ease of analysis, we decided to condense some of these values into one. This included mapping any education level between preschool and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED'', "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".
 
 ``` 
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
 
-The next step of the preprocessing phase was to handle the categorical variables. As identified in the data exploration phase, the target variable of the education group had a total of 16 possible values. For best use in our machine learning model and ease of analysis, we decided to condense some of these values into one. This included mapping any education level between pre-school and 12th grade to "Less than High School", and mapping both "Masters" and "Prof-school" to the variable "Master's Degree". In the end, the resulting 7 possible response variables from this mapping were "Less than High School", "High School or GED", "Some College", "Associates Degree", "Bachelor's Degree", "Master's Degree", and "Doctorate".
-
-``` 
 # Define a function to map education levels to groups
 def group_education_level(education_label):
-   education_index_mapping = {
-       'HS-grad': 'High School or GED',
-       'Some-college': 'Some College',
-       'Bachelors': "Bachelor's Degree",
-       'Masters': "Master's Degree",
-       'Assoc-voc': "Associate's Degree",
-       '11th': 'Less than High School',
-       'Assoc-acdm': "Associate's Degree",
-       '10th': 'Less than High School',
-       '7th-8th': 'Less than High School',
-       '9th': 'Less than High School',
-       'Prof-school': "Master's Degree",
-       '12th': 'Less than High School',
-       'Doctorate': 'Doctorate',
-       '5th-6th': 'Less than High School',
-       'Preschool': 'Less than High School',
-       '1st-4th': 'Less than High School'
-   }
-   return education_index_mapping.get(education_label, 'Other')
-
+    education_index_mapping = {
+        'HS-grad': 'High School or GED',
+        'Some-college': 'Some College',
+        'Bachelors': "Bachelor's Degree",
+        'Masters': "Master's Degree",
+        'Assoc-voc': "Associate's Degree",
+        '11th': 'Less than High School',
+        'Assoc-acdm': "Associate's Degree",
+        '10th': 'Less than High School',
+        '7th-8th': 'Less than High School',
+        '9th': 'Less than High School',
+        'Prof-school': "Master's Degree",
+        '12th': 'Less than High School',
+        'Doctorate': 'Doctorate',
+        '5th-6th': 'Less than High School',
+        'Preschool': 'Less than High School',
+        '1st-4th': 'Less than High School'
+    }
+    return education_index_mapping.get(education_label, 'Other')
 
 # Define a UDF to apply the function to each row of the DataFrame
 group_education_udf = udf(group_education_level, StringType())
 
-
 # Apply the UDF to create a new column for grouped education levels
 spark_dataframe_with_grouped_education = spark_dataframe.withColumn('EducationGroup', group_education_udf(spark_dataframe['Education']))
 
+# Count the frequency of each education group
+education_group_counts = spark_dataframe_with_grouped_education.groupBy('EducationGroup').count().toPandas()
 
-sampled_df_with_grouped_education = spark_dataframe_with_grouped_education.sample(withReplacement = False, fraction = 0.001, seed = 505)
+# Define the order of education groups from least education to most education
+education_order = [
+    'Less than High School',
+    'High School or GED',
+    'Some College',
+    "Associate's Degree",
+    "Bachelor's Degree",
+    "Master's Degree",
+    'Doctorate',
+    'Other'
+]
+
+# Filter only the existing education groups before reordering
+existing_education_groups = [group for group in education_order if group in education_group_counts['EducationGroup'].values]
+
+# Reorder the education_group_counts DataFrame based on the filtered order
+education_group_counts = education_group_counts.set_index('EducationGroup').loc[existing_education_groups].reset_index()
+
 ```
+The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation once the model was employed. The education groups and their corresponding index number were then printed for future reference. 
 
-The last step of the preprocessing is to encode the categorical variables for use in the machine learning model. For use in logistic regression, all categorical variables must have a numerical representation. In our case, this means both the feature variables and the target variables need to be transformed into their numerical representation.  This was achieved by using the StringIndexer() function to assign a numerical value to each categorical variable. The label and index values were then mapped for the education groups for interpretation once the model was employed. 
-
-``` 
+```
 list_of_columns = list(spark_dataframe_with_grouped_education.columns)
+CatergoricalDataType = [el for el in list_of_columns if el not in NumericalDataType]
+
 string_indexer = StringIndexer(inputCols=CatergoricalDataType, outputCols=[el + "Indexed" for el in CatergoricalDataType])
 indexer_model = string_indexer.fit(train_split)
 indexed_train = indexer_model.transform(scaled_train)
 indexed_test = indexer_model.transform(scaled_test)
 indexed_validation = indexer_model.transform(scaled_validation)
 
+preprocessed_columns = [el + "Indexed" for el in CatergoricalDataType] + [el + "Scaled" for el in NumericalDataType]
+train = indexed_train.select(preprocessed_columns)
+test = indexed_test.select(preprocessed_columns)
+validation = indexed_validation.select(preprocessed_columns)
 
-education_indexer_model = indexer_model
 
+# Features (X) for train, test, and validation
+feature_columns = [col for col in preprocessed_columns if col != 'EducationGroupIndexed']
+label_column = 'EducationGroupIndexed'
+
+education_indexer_model = indexer_model 
 
 # Retrieve the index mapping labels for the 'EducationGroup' column
 educationgroup_mapping = education_indexer_model.labelsArray[8]  # 'Education' is the ninth indexed column
 
-
 # Print the index mapping for the 'EducationGroup' column
 print("Index mapping for 'EducationGroup' column:")
 for index, label in enumerate(educationgroup_mapping):
-   print(f"Index: {index} --> Label: {label}")
-``` 
+    print(f"Index: {index} --> Label: {label}")
+
+```
+
 
 #### Model 1
 The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided not to use any hyperparameter tuning. 
