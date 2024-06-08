@@ -91,6 +91,8 @@ See [Written Report](#written-report)
 
 [Milestone 3 Jupyter Notebook](https://github.com/allison-conrey/DSC232R-GroupProject/blob/main/Milestone3.ipynb).
 
+[Milestone 4 Jupyter Notebook](https://github.com/allison-conrey/DSC232R-GroupProject/tree/Milestone4).
+
 ## Written Report 
 
 ### Introduction
