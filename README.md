@@ -103,9 +103,9 @@ Education is essential to the economic growth and development of a nation.7  The
 This study aims to explore economic and social factors influencing educational attainment, aiming to inform policies to elevate SES, reduce poverty, and enhance health and well-being.  By analyzing a simulated dataset representing diverse populations worldwide and their various characteristics, we aim to identify patterns and classifications using a variety of analytical methods. Our goal is to develop a predictive model that accurately explains the factors contributing to low educational attainment. The findings of this research could inform policy changes and raise awareness about the significant obstacles preventing access to education. Moreover, this study highlights the potential impact on regional economies and societies as education levels rise among the population.
 
 ### Methods
-#### Data Exploration
+Data Exploration
 In the data exploration phase, we first examined the data for missingness and noise using the isNull() function.  We then examined the variables present in the data to understand their types and formats using the describe() and show() functions. 
-```
+‘’’
 # How many records in this dataframe? 
 num_records = spark_dataframe.count()
 print('Number of records:', num_records)
@@ -120,10 +120,10 @@ spark_dataframe.describe()
 # Display basic statistics of numerical columns
 print("Basic Statistics of Numerical Columns:")
 print(pandas_df.describe())
-```
+‘’’
 
 Next, we created visualizations to identify the distributions of the data and any skewing (Fig 1.A, Fig 2).  We plan to address skewed distributions by normalizing the relevant variables during preprocessing. In addition, we sought to identify any relationships between numerical variables (Fig 1). Evidence of grouping, linear relationships, or other types of trends can assist in deciding which ML model will best suit the data. The last step in the data exploration process was to visualize the distribution of our target variable, the education group (Fig.3). 
-```
+‘’’
 # Visualize the distribution of numerical columns in a 3 by 2 grid layout
 plt.figure(figsize=(12, 10))
 plt.suptitle("Distributions of Numerical Variables", fontsize=16)  # Title of the overall plot
@@ -243,9 +243,8 @@ plt.xticks(rotation=45, ha='right')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
-```
-
-#### Pre-Processing 
+‘’’
+Preprocessing 
 We have varying types of data, including a mix of numerical and categorical variables. To properly handle these variables during the modeling process we will perform both scaling of the numerical variables and encoding of the categorical variables.
 
 Starting with the numerical variables,  scaling will ensure that our varying numerical values, like age and capital gains, can be properly compared on an even field. To complete this process all of the numerical variables are first transformed into a vector, and the numerical variables are scaled using the StandardScaler() function. The StandardScaler() function works by transforming the varying numerical values so that they have a mean of zero and a standard deviation of 1, representing a normal distribution. This ensures that all numerical values are on the same scale. During this stage of the preprocessing, we also performed a 60-20-20 train-test-validation split on the data. 
@@ -354,18 +353,9 @@ for index, label in enumerate(educationgroup_mapping):
     print(f"Index: {index} --> Label: {label}")
 
 ```
-
-
-#### Model 1
-The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided not to use any hyperparameter tuning. 
+Model One 
+The first model chosen was a Logistic Regression model. For this model, we used the vector representation of the numerical variables created during the preprocessing phases, as well as the transformed categorical variables. The target variable for the classification of the logistic regression model was the education group. For this first iteration, we decided to use a parameter grid search in an attempt to optimize several logistic regression parameters. In addition, we employed the use of the CrossValidator() function to perform 5-fold cross-validation.
 ``` 
-from pyspark.ml.classification import LogisticRegression
-from pyspark.ml import Pipeline
-
-# Define the features (X) and target variable (y) columns
-feature_columns = ['WorkClassIndexed', 'MaritalStatusIndexed', 'OccupationIndexed', 'RelationshipIndexed', 'RaceIndexed', 'SexIndexed', 'NativeCountryIndexed', 'IncomeIndexed', 'NumericalDataTypeTransformed']
-label_column = 'EducationGroupIndexed'
-
 # Define VectorAssembler to assemble features into a single vector column
 vector_assembler = VectorAssembler(inputCols=feature_columns, outputCol='features')
 
@@ -375,8 +365,420 @@ lr = LogisticRegression(featuresCol='features', labelCol=label_column)
 # Create a pipeline with VectorAssembler and Logistic Regression model
 pipeline = Pipeline(stages=[vector_assembler, lr])
 
+# Define the parameter grid to search
+paramGrid = ParamGridBuilder() \
+    .addGrid(lr.regParam, [0.01, 0.1, 1.0, 10.0]) \
+    .addGrid(lr.elasticNetParam, [0.0, 0.5, 1.0]) \
+    .addGrid(lr.maxIter, [100, 200, 500]) \
+    .addGrid(lr.tol, [1e-4, 1e-3, 1e-2]) \
+    .addGrid(lr.fitIntercept, [True, False]) \
+    .build()
+
+evaluator = MulticlassClassificationEvaluator(predictionCol="prediction", labelCol="EducationGroupIndexed", metricName="accuracy")
+
+# Create CrossValidator
+crossval = CrossValidator(estimator=pipeline,
+                          estimatorParamMaps=paramGrid,
+                          evaluator=evaluator,
+                          numFolds=5)  # Use 5-fold cross-validation
+
+# Fit the cross-validated model to the training data
+cvModel = crossval.fit(train)
+
+# Get the best model from cross-validation
+bestModel = cvModel.bestModel
+
+```
+We then found the accuracy of the model for the training, validation, and test set
+
+```
+# Compute accuracy for training set
+train_predictions = bestModel.transform(train)
+train_accuracy = evaluator.evaluate(train_predictions)
+
+# Compute accuracy for validation set
+validation_predictions = bestModel.transform(validation)
+validation_accuracy = evaluator.evaluate(validation_predictions)
+
+# Evaluate the best model on the test data
+test_predictions = bestModel.transform(test)
+test_accuracy = evaluator.evaluate(test_predictions)
+
+# Print accuracies
+print("Training Accuracy:", train_accuracy)
+print("Validation Accuracy:", validation_accuracy)
+print("Test Accuracy:", test_accuracy)
+
+```
+We then employed a confusion matrix for the different education groups using the predictions made by the model. 
+
+```
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+# Extract true labels and predictions from test set
+y_true = np.array(test.select(label_column).collect()).ravel()
+y_pred = np.array(test_predictions.select("prediction").collect()).ravel()
+
+# Create confusion matrix
+conf_matrix = confusion_matrix(y_true, y_pred)
+
+# Define the education labels
+education_labels = {
+    0: 'Less than High School',
+    1: 'High School or GED',
+    2: 'Some College',
+    3: "Associate's Degree",
+    4: "Master's Degree",
+    5: "Bachelor's Degree",
+    6: 'Doctorate'
+}
+
+# Map the numeric labels to the corresponding education labels
+mapped_labels = [education_labels[label] for label in sorted(education_labels.keys())]
+
+# Plot confusion matrix with education labels
+disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=mapped_labels)
+disp.plot(cmap=plt.cm.Blues)
+plt.title('Confusion Matrix')
+plt.xticks(rotation=45, ha='right')  # Rotate the x-axis labels for better readability
+plt.show()
+
+```
+Based on the results in the confusion matrix, we then created a histogram visualization that would show the accuracy of the predictions made by the model for each of the education groups. 
+
+```
+# Function to calculate per-class accuracy from the confusion matrix
+def calculate_per_class_accuracy(conf_matrix):
+    per_class_accuracy = conf_matrix.diagonal() / conf_matrix.sum(axis=1)
+    return per_class_accuracy
+
+# Calculate per-class accuracy
+per_class_accuracy = calculate_per_class_accuracy(conf_matrix)
+
+# Define the education labels
+education_labels = {
+    0: 'Less than High School',
+    1: 'High School or GED',
+    2: 'Some College',
+    3: "Associate's Degree",
+    4: "Master's Degree",
+    5: "Bachelor's Degree",
+    6: 'Doctorate'
+}
+
+# Map the numeric labels to the corresponding education labels
+mapped_labels = [education_labels[label] for label in sorted(education_labels.keys())]
+
+# Plot per-class accuracy with education labels
+plt.figure(figsize=(12, 8))
+plt.bar(mapped_labels, per_class_accuracy, color='blue')
+plt.xlabel('Education Level')
+plt.ylabel('Accuracy')
+plt.title('Per-Class Accuracy Percent')
+plt.ylim(0, 1)  # Accuracy ranges from 0 to 1
+plt.xticks(rotation=45, ha='right')  # Rotate the x-axis labels for better readability
+plt.grid(axis='y')
+
+# Add accuracy values on top of bars
+for i in range(len(mapped_labels)):
+    plt.text(i, per_class_accuracy[i], f'{per_class_accuracy[i]:.2f}', ha='center', va='bottom')
+
+plt.show()
+```
+Next, we extracted the coefficient values from the best logistic regression model found above. We then aggregated the coefficients of each feature by taking the mean of the absolute value of the coefficients across all of the education groups (classes). We printed these results and used them to create a visualization of the aggregate coefficient values sorted from highest value to lowest values. 
+
+```
+# Extract the coefficients from the best logistic regression model
+best_lr_model = bestModel.stages[-1]
+
+# Check if the model is binary or multinomial
+if best_lr_model.numClasses == 2:
+    # For binary classification
+    coefficients = best_lr_model.coefficients.toArray()
+    intercept = best_lr_model.intercept
+else:
+    # For multinomial classification
+    coefficients = best_lr_model.coefficientMatrix.toArray()
+    intercept = best_lr_model.interceptVector.toArray()
+
+# Aggregate coefficients
+if best_lr_model.numClasses == 2:
+    # For binary classification, use coefficients directly
+    feature_coefficients = {feature: coef for feature, coef in zip(feature_columns, coefficients)}
+else:
+    # For multinomial classification, aggregate coefficients
+    # Here we take the mean of the absolute values of the coefficients across all classes
+    aggregated_coefficients = np.mean(np.abs(coefficients), axis=0)
+    feature_coefficients = {feature: float(coef) for feature, coef in zip(feature_columns, aggregated_coefficients)}
+
+# Print the coefficients
+print("Intercept:", intercept)
+print("Aggregated Coefficients for each feature:")
+for feature, coef in feature_coefficients.items():
+    print(f"{feature}: {coef}")
+
+sorted_features = sorted(feature_coefficients.items(), key=lambda x: x[1], reverse=True)
+sorted_feature_names = [feature for feature, coef in sorted_features]
+sorted_coefficients = [coef for feature, coef in sorted_features]
+
+# Plot the sorted features with their coefficients
+plt.figure(figsize=(12, 8))
+plt.bar(sorted_feature_names, sorted_coefficients, color='blue')
+plt.xlabel('Feature')
+plt.ylabel('Coefficient Value')
+plt.title('Sorted Features by Coefficient Value')
+plt.xticks(rotation=45, ha='right')  # Rotate the feature names for better readability
+plt.grid(True)
+ ```
+In order to gain more insight into our current logistic regression model, and how varying the numbers of features may contribute to the performance of the model, we evaluated the models performance using varying amounts of the top features (where top features were determined by the coefficient processing and sorting above). We started by testing the model with the top single feature, followed by the top two features, then the top three features,  and so on until we had conducted model testing from a single feature to all fourteen features. This process was repeated three times in total, testing all variations of the model on the training, validation, and test data. We then plotted the performance of every variation of the model for the training, validation, and test data to better understand the behavior of the model and how to optimize it. 
+
+```
+# Evaluate model performance using top N features
+num_features_list = range(1, len(sorted_feature_names) + 1)
+train_accuracy_list = []
+validation_accuracy_list = []
+test_accuracy_list = []
+
+for num_features in num_features_list:
+    top_features = sorted_feature_names[:num_features]
+    
+    # Define VectorAssembler to assemble top features into a single vector column
+    vector_assembler = VectorAssembler(inputCols=top_features, outputCol='features')
+    
+    # Create Logistic Regression model
+    lr = LogisticRegression(featuresCol='features', labelCol=label_column)
+    
+    # Create a pipeline with VectorAssembler and Logistic Regression model
+    pipeline = Pipeline(stages=[vector_assembler, lr])
+    
+    # Fit the model to the training data
+    model = pipeline.fit(train)
+    
+    # Evaluate the model on the training data
+    train_predictions = model.transform(train)
+    train_accuracy = evaluator.evaluate(train_predictions)
+    train_accuracy_list.append(train_accuracy)
+    
+    # Evaluate the model on the validation data
+    validation_predictions = model.transform(validation)
+    validation_accuracy = evaluator.evaluate(validation_predictions)
+    validation_accuracy_list.append(validation_accuracy)
+    
+    # Evaluate the model on the test data
+    test_predictions = model.transform(test)
+    test_accuracy = evaluator.evaluate(test_predictions)
+    test_accuracy_list.append(test_accuracy)
+
+# Plot the performance
+plt.figure(figsize=(12, 8))
+plt.plot(num_features_list, train_accuracy_list, marker='o', color='blue', label='Training Accuracy')
+plt.plot(num_features_list, validation_accuracy_list, marker='o', color='green', label='Validation Accuracy')
+plt.plot(num_features_list, test_accuracy_list, marker='o', color='red', label='Test Accuracy')
+plt.xlabel('Number of Features')
+plt.ylabel('Accuracy')
+plt.title('Model Performance with Increasing Number of Top Features')
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+The last step for Model 1 was to create a visualization showing the predictive error of both the model on the training data and the model on the testing data using various values of C (the regularization parameter). First, the spark dataframe was converted to a NumPy array for use with the Scikit-Learn package for the train, validation, and test sets. The model testing was then performed with values of C from 10-4 to 101 . 
+
+```
+# Convert Spark DataFrame to NumPy arrays for Scikit-Learn
+X_train_np = np.array(train.select(feature_columns).collect())
+y_train_np = np.array(train.select(label_column).collect()).ravel()
+
+X_validation_np = np.array(validation.select(feature_columns).collect())
+y_validation_np = np.array(validation.select(label_column).collect()).ravel()
+
+X_test_np = np.array(test.select(feature_columns).collect())
+y_test_np = np.array(test.select(label_column).collect()).ravel()
+
+In [44]:
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
+
+# Assuming X_train, y_train, X_test, and y_test are already defined
+# If not, you need to split your data into training and test sets
+
+# Standardize the features
+scaler = StandardScaler()
+X_train_np = scaler.fit_transform(X_train_np)
+X_test_np = scaler.transform(X_test_np)
+
+# Define a range of regularization parameters (inverse of regularization strength)
+C_values = np.logspace(-4, 1, 30)
+
+# Lists to store errors
+train_errors = []
+test_errors = []
+
+# Iterate over different values of C
+for C in C_values:
+    lr = LogisticRegression(C=C, max_iter=10000)
+    
+    # Fit the logistic regression model
+    lr.fit(X_train_np, y_train_np)
+    
+    # Predict on training data
+    train_predictions = lr.predict(X_train_np)
+    train_error = 1 - accuracy_score(y_train_np, train_predictions)
+    train_errors.append(train_error)
+    
+    # Predict on test data
+    test_predictions = lr.predict(X_test_np)
+    test_error = 1 - accuracy_score(y_test_np, test_predictions)
+    test_errors.append(test_error)
+
+# Plot the errors
+plt.figure(figsize=(10, 6))
+plt.plot(C_values, train_errors, label='Error on Training Data', color='red')
+plt.plot(C_values, test_errors, label='Error on Test Data', color='blue')
+
+# Add labels and title
+plt.xlabel('Regularization Parameter (C)')
+plt.ylabel('Predictive Error')
+plt.title('Predictive Error for Logistic Regression')
+
+# Set the scale of x-axis to logarithmic
+plt.xscale('log')
+
+# Add legend
+plt.legend()
+
+# Show the plot
+plt.show()
+Model Two 
+
+For the second model, we first used a standard Random Forest Classifier. We used the VectorAssembler() function to first assemble all the desired features into a single vector column for use in the random forest model. We then trained a random forest model with this vector, the labels, and a max bin parameter of 64, and found and printed the accuracy of this model for the training, validation, and test sets. 
+
+```
+from pyspark.ml.classification import RandomForestClassifier
+
+# Define VectorAssembler to assemble features into a single vector column
+vector_assembler = VectorAssembler(inputCols=feature_columns, outputCol='features')
+
+# Create Random Forest model
+rf = RandomForestClassifier(featuresCol='features', labelCol=label_column, maxBins=64)
+
+# Create a pipeline with VectorAssembler and Logistic Regression model
+pipeline = Pipeline(stages=[vector_assembler, rf])
+
 # Fit the pipeline to the training data
 model = pipeline.fit(train)
+
+# Compute accuracy for training set
+train_predictions = model.transform(train)
+train_accuracy = evaluator.evaluate(train_predictions)
+
+# Compute accuracy for validation set
+validation_predictions = model.transform(validation)
+validation_accuracy = evaluator.evaluate(validation_predictions)
+
+# Make predictions on the test set
+test_predictions = model.transform(test)
+accuracy = evaluator.evaluate(test_predictions)
+
+# Print accuracies
+print("Training Accuracy:", train_accuracy)
+print("Validation Accuracy:", validation_accuracy)
+print("Test Accuracy:", accuracy)
+```
+After training the initial model, we created an evaluator using the MulticlassClassificationEvaluator() function to determine the most advantageous model complexity for the Random Tree Model. We tested the model in steps of 20 from 20-100 trees to determine the best complexity. We repeated this process for all three partitions of the data (train, validation, and test), and retained the predictive error for each data partition and each tree complexity value for visualization purposes. We then created a line visualization of the Model Complexity vs Predictive Error for all data partitions and all complexities tested. We finally identified the best complexity value that resulted in the lowest predictive error for the validation set. 
+
+```
+# Create an evaluator
+evaluator = MulticlassClassificationEvaluator(predictionCol="prediction", labelCol=label_column, metricName="accuracy")
+
+# Lists to store errors
+training_errors = []
+validation_errors = []
+test_errors = []
+model_complexities = []
+
+# Define the range for model complexity (number of trees in the Random Forest)
+num_trees_list = [20, 40, 60, 80, 100]
+
+# Iterate over different values of model complexity
+for num_trees in num_trees_list:
+    # Create Random Forest model with the current number of trees
+    rf = RandomForestClassifier(featuresCol='features', labelCol=label_column, numTrees=num_trees, maxBins=64)
+    
+    # Create a pipeline with VectorAssembler and Random Forest model
+    pipeline = Pipeline(stages=[vector_assembler, rf])
+    
+    # Fit the pipeline to the training data
+    model = pipeline.fit(train)
+    
+    # Compute accuracy for training set
+    train_predictions = model.transform(train)
+    train_accuracy = evaluator.evaluate(train_predictions)
+    train_error = 1 - train_accuracy
+    training_errors.append(train_error)
+    
+    # Compute accuracy for validation set
+    validation_predictions = model.transform(validation)
+    validation_accuracy = evaluator.evaluate(validation_predictions)
+    validation_error = 1 - validation_accuracy
+    validation_errors.append(validation_error)
+    
+    # Make predictions on the test set
+    test_predictions = model.transform(test)
+    test_accuracy = evaluator.evaluate(test_predictions)
+    test_error = 1 - test_accuracy
+    test_errors.append(test_error)
+    
+    # Store the current model complexity
+    model_complexities.append(num_trees)
+
+# Plot the final errors against model complexity
+plt.figure(figsize=(12, 8))
+plt.plot(model_complexities, training_errors, label='Error on Training Data', color='red')
+plt.plot(model_complexities, validation_errors, label='Error on Validation Data', color='green')
+plt.plot(model_complexities, test_errors, label='Error on Test Data', color='blue')
+plt.axvline(x=best_num_trees, color='black', linestyle='--', label=f'Best Model Complexity ({best_num_trees} Trees)')
+
+# Add labels and title
+plt.xlabel('Model Complexity (Number of Trees)')
+plt.ylabel('Predictive Error')
+plt.title('Model Complexity vs. Predictive Error')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Find the best model complexity based on validation accuracy
+best_index = np.argmin(validation_errors)
+best_num_trees = model_complexities[best_index]
+
+print(f"Best number of trees: {best_num_trees}")
+
+
+```
+Once the best complexity was discovered, we trained a final Random Forest Classifier model that included the best complexity in its parameters. We then found and printed the training, validation, and test accuracy for the final model. 
+
+```
+# Train the final model using the best number of trees
+rf = RandomForestClassifier(featuresCol='features', labelCol=label_column, numTrees=best_num_trees, maxBins=64)
+pipeline = Pipeline(stages=[vector_assembler, rf])
+final_model = pipeline.fit(train)
+
+# Compute accuracy for training set
+final_train_predictions = final_model.transform(train)
+final_train_accuracy = evaluator.evaluate(final_train_predictions)
+final_train_error = 1 - final_train_accuracy
+
+# Compute accuracy for validation set
+final_validation_predictions = final_model.transform(validation)
+final_validation_accuracy = evaluator.evaluate(final_validation_predictions)
+final_validation_error = 1 - final_validation_accuracy
+
+# Make predictions on the test set
+final_test_predictions = final_model.transform(test)
+final_test_accuracy = evaluator.evaluate(final_test_predictions)
+final_test_error = 1 - final_test_accuracy
 ```
 
 
